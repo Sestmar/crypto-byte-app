@@ -215,25 +215,26 @@ ion-searchbar {
   padding-bottom: 10px;
 }
 
-/* --- 7. BARRA DE PESTAÑAS (TABS) - CRISTAL ULTRA TRANSPARENTE --- */
+/* --- 7. BARRA DE PESTAÑAS (TABS) - CORREGIDO PARA MÓVIL --- */
 ion-tab-bar {
-  /* Fondo casi invisible (20% opacidad) para ver pasar las estrellas */
+  /* Fondo transparente (20%) */
   --background: rgba(5, 5, 16, 0.20); 
-  
-  /* Desenfoque fuerte para mantener la legibilidad sobre las estrellas */
   backdrop-filter: blur(15px); 
-  
-  /* Borde superior muy sutil */
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-  
-  /* Eliminamos sombras pesadas para que parezca flotar de verdad */
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3);
   
-  padding-bottom: 5px;
-  padding-top: 5px;
-  position: absolute; /* Truco: ayuda a que el fondo pase por debajo en algunos navegadores */
+  position: absolute;
   bottom: 0;
   width: 100%;
+  
+  /* --- CORRECCIÓN MÓVIL AQUÍ --- */
+  /* Añadimos 10px extra + lo que ocupe la barra de Android/iOS */
+  padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
+  padding-top: 10px;
+  
+  /* Ajustamos la altura para que quepa todo */
+  height: calc(60px + env(safe-area-inset-bottom)); 
+  contain: strict; /* Mejora rendimiento */
 }
 
 /* Efecto para el botón seleccionado */
