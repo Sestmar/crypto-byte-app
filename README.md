@@ -83,3 +83,12 @@ La calidad del código ha sido una prioridad en este proyecto.
 Cubren Servicios, Llamadas HTTP y Lógica de Componentes.
 ```bash
 npx ng test
+
+Roadmap Futuro (v2.0)
+[ ] Integración Backend: Migrar de LocalStorage a Firebase Firestore para sincronización en la nube.
+
+[ ] Autenticación: Login de usuario mediante Firebase Auth (Google/Email).
+
+[ ] Funcionalidades Web3: Conectar wallets reales (MetaMask/Phantom) usando Wagmi/Viem.
+
+[ ] Tracker PnL: Calcular ganancias y pérdidas reales basadas en transacciones de usuario.
