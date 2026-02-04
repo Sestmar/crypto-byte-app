@@ -1,0 +1,22 @@
+[
+  {
+    "id": "bitcoin",
+    "symbol": "btc",
+    "name": "Bitcoin",
+    "image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png",
+    "current_price": 50000,
+    "market_cap": 1000000000,
+    "market_cap_rank": 1,
+    "price_change_percentage_24h": 5.5
+  },
+  {
+    "id": "ethereum",
+    "symbol": "eth",
+    "name": "Ethereum",
+    "image": "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
+    "current_price": 3000,
+    "market_cap": 500000000,
+    "market_cap_rank": 2,
+    "price_change_percentage_24h": -1.2
+  }
+]

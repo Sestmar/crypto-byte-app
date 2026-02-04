@@ -1,0 +1,28 @@
+/* variables.scss */
+:root {
+  /* Fondo principal: Casi negro azulado */
+  --ion-background-color: #050511;
+  --ion-text-color: #e0e0e0;
+
+  /* Primary: Cyberpunk Pink/Purple */
+  --ion-color-primary: #ff00ff;
+  --ion-color-primary-rgb: 255, 0, 255;
+  --ion-color-primary-contrast: #ffffff;
+
+  /* Secondary: Neon Cyan */
+  --ion-color-secondary: #00ffff;
+  --ion-color-secondary-rgb: 0, 255, 255;
+  --ion-color-secondary-contrast: #000000;
+
+  /* Tertiary: Neon Green (para subidas de precio) */
+  --ion-color-tertiary: #39ff14;
+  --ion-color-tertiary-rgb: 57, 255, 20;
+
+  /* Danger: Neon Red (para bajadas de precio) */
+  --ion-color-danger: #ff073a;
+
+  /* Ajustes de tarjetas */
+  --ion-card-background: #121225;
+  --ion-tab-bar-background: #0b0c15;
+  --ion-tab-bar-color-selected: var(--ion-color-secondary);
+}

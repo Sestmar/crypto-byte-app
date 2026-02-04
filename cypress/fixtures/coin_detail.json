@@ -1,0 +1,15 @@
+{
+  "id": "bitcoin",
+  "symbol": "btc",
+  "name": "Bitcoin",
+  "image": { "large": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png" },
+  "description": { "en": "Bitcoin is the first decentralized cryptocurrency created by Satoshi Nakamoto." },
+  "market_data": {
+    "current_price": { "usd": 50000 },
+    "price_change_percentage_24h": 5.5,
+    "market_cap": { "usd": 1000000000 },
+    "total_volume": { "usd": 50000000 },
+    "high_24h": { "usd": 52000 },
+    "low_24h": { "usd": 48000 }
+  }
+}

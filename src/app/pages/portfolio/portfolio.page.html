@@ -1,0 +1,50 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      <span class="glitch" data-text="CRYPTO WALLET">CRYPTO WALLET</span>
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="openSettings()">
+        <ion-icon slot="icon-only" name="settings-outline" style="color: var(--neon-cyan); filter: drop-shadow(0 0 5px var(--neon-cyan));"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="cyber-bg">
+    <div class="stars"></div>
+    <div class="stars2"></div>
+  </div>
+
+  <div *ngIf="myCoins.length === 0" class="ion-text-center ion-padding" style="margin-top: 50px;">
+    <ion-icon name="wallet" style="font-size: 4rem; color: var(--neon-pink); opacity: 0.8;"></ion-icon>
+    <p style="color: #bbb; font-family: 'Orbitron'">Your wallet is empty.<br>Go to Market and add some coins!</p>
+  </div>
+
+  <ion-list style="background: transparent; padding-top: 10px;">
+    
+    <ion-card *ngFor="let coin of myCoins" class="portfolio-card">
+      <ion-item lines="none" detail="false" style="--padding-start: 0;">
+        
+        <ion-avatar slot="start" style="margin-left: 10px;">
+          <img [src]="coin.image" style="filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));" />
+        </ion-avatar>
+        
+        <ion-label>
+          <h2 style="color: var(--neon-cyan); font-weight: bold; letter-spacing: 1px;">{{ coin.name }}</h2>
+          <p style="font-family: 'Rajdhani'; color: #aaa;">HOLDING ASSET</p> 
+        </ion-label>
+        
+        <ion-buttons slot="end">
+          <ion-button fill="clear" class="cyber-delete-btn" (click)="remove(coin)">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+
+      </ion-item>
+    </ion-card>
+
+  </ion-list>
+</ion-content>

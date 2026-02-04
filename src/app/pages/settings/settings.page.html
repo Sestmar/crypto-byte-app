@@ -1,0 +1,45 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/wallet" color="secondary"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <span class="glitch" data-text="SYSTEM CONFIG">SYSTEM CONFIG</span>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="cyber-bg">
+    <div class="stars"></div>
+    <div class="stars2"></div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; height: 100%; justify-content: center; align-items: center; padding: 20px;">
+    
+    <ion-card style="width: 100%; backdrop-filter: blur(10px); background: rgba(15, 15, 25, 0.8); border: 1px solid var(--neon-cyan);">
+      <ion-card-header>
+        <div style="text-align: center; margin-bottom: 10px;">
+          <ion-icon name="code-slash" style="font-size: 3rem; color: var(--neon-pink);"></ion-icon>
+        </div>
+        <ion-card-title style="text-align: center; color: white; font-family: 'Orbitron';">CRYPTOBYTE</ion-card-title>
+        <ion-card-subtitle style="text-align: center; color: var(--neon-cyan);">v1.0.4 [STABLE]</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content style="text-align: center; font-size: 1.1rem; color: #ccc;">
+        <p>Advanced Crypto Tracker developed for DAM Project.</p>
+        <br>
+        <p style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+          Developed by: <br>
+          <strong style="color: white; font-size: 1.3rem;">Sergio Estudillo</strong>
+        </p>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-button expand="block" fill="outline" color="secondary" style="margin-top: 30px; width: 100%; height: 50px;">
+      <ion-icon slot="start" name="bug"></ion-icon>
+      REPORT SYSTEM BUG
+    </ion-button>
+
+  </div>
+</ion-content>

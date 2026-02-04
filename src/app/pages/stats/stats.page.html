@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      <span class="glitch" data-text="GLOBAL METRICS">GLOBAL METRICS</span>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="cyber-bg">
+    <div class="stars"></div>
+    <div class="stars2"></div>
+  </div>
+
+  <div *ngIf="globalData">
+    <ion-card class="neon-card">
+      <ion-card-header>
+        <ion-card-subtitle style="color: var(--neon-pink)">ACTIVE COINS</ion-card-subtitle>
+        <ion-card-title style="font-size: 2rem; color: white;">{{ globalData.active_cryptocurrencies }}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle style="color: var(--neon-cyan)">MARKET DOMINANCE</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <p style="color:white; margin-bottom: 5px;">Bitcoin ({{ globalData.market_cap_percentage.btc | number:'1.1-1' }}%)</p>
+        <ion-progress-bar [value]="globalData.market_cap_percentage.btc / 100" color="warning"></ion-progress-bar>
+
+        <p style="color:white; margin-top: 15px; margin-bottom: 5px;">Ethereum ({{ globalData.market_cap_percentage.eth | number:'1.1-1' }}%)</p>
+        <ion-progress-bar [value]="globalData.market_cap_percentage.eth / 100" color="tertiary"></ion-progress-bar>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

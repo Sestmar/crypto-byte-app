@@ -1,0 +1,53 @@
+<ion-content [fullscreen]="true">
+  <div class="cyber-bg">
+    <div class="stars"></div>
+    <div class="stars2"></div>
+  </div>
+
+  <ion-list style="background: transparent; padding-top: 10px;">
+    <ion-card *ngFor="let item of trendingCoins; let i = index" button (click)="openDetail(item.item.id)">
+      <ion-item lines="none" detail="true"> <div slot="start" style="
+            font-family: 'Orbitron'; 
+            font-size: 1.5rem; 
+            font-weight: 900;
+            color: rgba(255,255,255,0.2); /* Más sutil */
+            width: 40px; 
+            text-align: center;
+            margin-right: 10px;">
+          {{ i + 1 }}
+        </div>
+        
+        <ion-avatar slot="start" style="margin-right: 15px;">
+          <img [src]="item.item.small" style="filter: drop-shadow(0 0 5px rgba(0, 243, 255, 0.4));" />
+        </ion-avatar>
+        
+        <ion-label>
+          <h2 style="color: var(--neon-cyan); font-weight: bold; letter-spacing: 1px;">
+            {{ item.item.name }}
+          </h2>
+          <p style="color: #aaa; font-family: 'Orbitron'; font-size: 0.8rem;">
+            {{ item.item.symbol }}
+          </p>
+        </ion-label>
+        
+        <div slot="end" style="
+            background: rgba(255, 255, 255, 0.05); /* Fondo casi transparente */
+            border: 1px solid rgba(255, 215, 0, 0.4); /* Borde dorado suave */
+            color: #ebd185; /* Texto dorado pálido */
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: 'Rajdhani';
+            font-weight: bold;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        ">
+          <span style="opacity: 0.7; margin-right: 4px; font-size: 0.7rem;">RANK</span>
+          <span>#{{ item.item.market_cap_rank || '?' }}</span>
+        </div>
+
+      </ion-item>
+    </ion-card>
+  </ion-list>
+</ion-content>

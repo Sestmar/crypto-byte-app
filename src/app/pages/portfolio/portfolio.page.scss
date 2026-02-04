@@ -1,0 +1,35 @@
+/* Estilo para la tarjeta en Portfolio (más compacta que en Market) */
+.portfolio-card {
+  margin: 8px 16px;
+  backdrop-filter: blur(10px);
+  background: rgba(15, 15, 25, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* --- EL NUEVO BOTÓN DE BORRAR CYBERPUNK --- */
+.cyber-delete-btn {
+  /* Estado normal: sutil, casi transparente */
+  --color: rgba(255, 7, 58, 0.7); /* Rojo semitransparente */
+  border: 1px solid rgba(255, 7, 58, 0.3); /* Borde fino rojo */
+  border-radius: 8px;
+  height: 40px;
+  width: 40px;
+  margin-right: 5px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  ion-icon {
+    font-size: 1.3rem;
+  }
+
+  /* Estado Hover/Active (al tocarlo): ¡EXPLOSIÓN DE NEÓN! */
+  &:hover, &:active {
+    --color: var(--neon-red); /* Rojo intenso */
+    background: rgba(255, 7, 58, 0.15); /* Fondo rojo sutil */
+    border-color: var(--neon-red);
+    /* Doble sombra para efecto resplandor intenso */
+    box-shadow: 
+      0 0 15px var(--neon-red),
+      inset 0 0 10px rgba(255, 7, 58, 0.5);
+    transform: scale(1.1); /* Crece un poco */
+  }
+}

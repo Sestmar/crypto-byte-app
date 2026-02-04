@@ -1,0 +1,89 @@
+/* Estilos Específicos del Detalle */
+
+.header-section {
+  padding-top: 20px;
+  margin-bottom: 10px;
+}
+
+.coin-icon-wrapper {
+  margin-bottom: 10px;
+}
+
+.coin-glow {
+  width: 70px; 
+  height: 70px;
+  filter: drop-shadow(0 0 15px rgba(0, 243, 255, 0.4)); /* Brillo en el logo */
+}
+
+.main-price {
+  font-family: 'Orbitron';
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: white;
+  margin: 5px 0;
+  text-shadow: 0 0 10px rgba(255,255,255,0.3);
+}
+
+/* Contenedor Gráfica */
+.chart-container {
+  position: relative;
+  height: 250px; /* Altura FIJA para que no colapse */
+  width: 100%;
+  margin: 10px 0 20px 0;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(0,0,0,0.2); /* Fondo sutil tras la gráfica */
+}
+
+/* Cajas de Estadísticas */
+.stat-box {
+  background: rgba(255,255,255,0.03);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: #888;
+  font-family: 'Orbitron';
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  font-size: 1rem;
+  color: white;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.text-green { color: var(--neon-green); text-shadow: 0 0 5px rgba(10, 255, 10, 0.3); }
+.text-red { color: var(--neon-red); text-shadow: 0 0 5px rgba(255, 7, 58, 0.3); }
+
+/* Sección About */
+.about-section {
+  padding: 20px;
+  margin: 16px;
+  background: rgba(15, 15, 25, 0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+}
+
+.about-text {
+  color: #ccc;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+/* Eliminar enlaces molestos que vienen en la descripción de la API */
+::ng-deep .about-text a {
+  color: var(--neon-cyan);
+  text-decoration: none;
+}
+
+.fav-fab {
+  --box-shadow: 0 0 15px var(--neon-pink);
+}

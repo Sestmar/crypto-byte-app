@@ -1,0 +1,58 @@
+<ion-content [fullscreen]="true">
+  <div class="cyber-bg">
+    <div class="stars"></div>
+    <div class="stars2"></div>
+  </div>
+
+  <div style="padding: 10px 16px; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid rgba(255,255,255,0.05);">
+    
+    <ion-chip [outline]="activeFilter !== 'rank'" [color]="activeFilter === 'rank' ? 'secondary' : 'medium'" (click)="sort('rank')">
+      <ion-label>Top Rank</ion-label>
+    </ion-chip>
+
+    <ion-chip [outline]="activeFilter !== 'gainers'" [color]="activeFilter === 'gainers' ? 'success' : 'medium'" (click)="sort('gainers')">
+      <ion-icon name="arrow-up"></ion-icon>
+      <ion-label>Gainers</ion-label>
+    </ion-chip>
+
+    <ion-chip [outline]="activeFilter !== 'losers'" [color]="activeFilter === 'losers' ? 'danger' : 'medium'" (click)="sort('losers')">
+      <ion-icon name="arrow-down"></ion-icon>
+      <ion-label>Losers</ion-label>
+    </ion-chip>
+
+    <ion-chip [outline]="activeFilter !== 'name'" [color]="activeFilter === 'name' ? 'tertiary' : 'medium'" (click)="sort('name')">
+      <ion-label>A-Z</ion-label>
+    </ion-chip>
+
+  </div>
+
+  <ion-list *ngIf="loading" style="background: transparent;">
+    </ion-list>
+
+  <ion-list *ngIf="!loading" style="background: transparent;">
+      <ion-card *ngFor="let coin of coins" class="coin-card" (click)="openDetail(coin.id)">
+        <ion-item lines="none" detail="false">
+        <ion-avatar slot="start">
+          <img [src]="coin.image" [alt]="coin.name" />
+        </ion-avatar>
+        
+        <ion-label>
+          <h2 class="coin-name" style="color: white; font-weight: bold;">
+            {{ coin.name }} 
+            <span style="color: #666; font-size: 0.8rem;">{{ coin.symbol | uppercase }}</span>
+          </h2>
+          <p class="coin-price" style="color: var(--neon-cyan); font-size: 1.1rem; font-family: 'Rajdhani';">
+            {{ coin.current_price | currency:'USD' }}
+          </p>
+        </ion-label>
+
+        <ion-badge slot="end" [style.background]="coin.price_change_percentage_24h >= 0 ? 'rgba(10, 255, 10, 0.2)' : 'rgba(255, 7, 58, 0.2)'"
+                   [style.color]="coin.price_change_percentage_24h >= 0 ? 'var(--neon-green)' : 'var(--neon-red)'"
+                   style="border: 1px solid currentColor; padding: 6px 10px; border-radius: 8px;">
+          {{ coin.price_change_percentage_24h | number:'1.2-2' }}%
+        </ion-badge>
+      </ion-item>
+      </ion-card>
+  </ion-list>
+
+</ion-content>

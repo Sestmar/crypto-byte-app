@@ -1,0 +1,261 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ */
+
+/* 1. FUENTES FUTURISTAS */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&display=swap');
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/* Tema Oscuro Sistema */
+@import '@ionic/angular/css/palettes/dark.system.css';
+
+:root {
+  /* Paleta Cyberpunk Definitive */
+  --ion-background-color: #050510; 
+  --ion-text-color: #e0e6ed;
+  
+  --neon-pink: #ff00ff;
+  --neon-cyan: #00f3ff;
+  --neon-green: #0aff0a;
+  --neon-red: #ff073a;
+  
+  /* Fondos semi-transparentes */
+  --glass-bg: rgba(20, 20, 35, 0.6);
+}
+
+/* Tipografía Global */
+ion-title, h1, h2 {
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+}
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+}
+
+/* --- 2. FONDO DE PARTÍCULAS (ESTRELLAS) --- */
+/* Función SCSS para generar estrellas aleatorias */
+@function box-shadow-stars($n) {
+  $value: '#{random(2000)}px #{random(2000)}px #FFF';
+  @for $i from 2 through $n {
+    $value: '#{$value} , #{random(2000)}px #{random(2000)}px #FFF';
+  }
+  @return unquote($value);
+}
+
+/* Generamos las sombras estáticas (el navegador las anima ligeras) */
+$shadows-small:  box-shadow-stars(700);
+$shadows-medium: box-shadow-stars(200);
+
+.cyber-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Degradado profundo de negro a azul espacial */
+  background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+  z-index: 0; /* Estará al fondo del content */
+  pointer-events: none; /* Permite hacer clic a través de él */
+}
+
+.stars {
+  width: 1px;
+  height: 1px;
+  background: transparent;
+  box-shadow: $shadows-small;
+  animation: animStar 50s linear infinite;
+}
+
+.stars2 {
+  width: 2px;
+  height: 2px;
+  background: transparent;
+  box-shadow: $shadows-medium;
+  animation: animStar 100s linear infinite;
+}
+
+@keyframes animStar {
+  from { transform: translateY(0px); }
+  to { transform: translateY(-2000px); }
+}
+
+/* --- 3. TARJETAS INTERACTIVAS (GLASS UI - MÁS TRANSPARENTES) --- */
+ion-card {
+  /* Fondo mucho más transparente y oscuro para ver las estrellas */
+  background: rgba(15, 15, 25, 0.4) !important; 
+  backdrop-filter: blur(8px); /* Blur un poco menor para nitidez */
+  border-radius: 16px;
+  margin: 12px 16px; /* Separación vertical y horizontal */
+  border: 1px solid rgba(255, 255, 255, 0.08); 
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  overflow: visible;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Efecto Hover/Active más potente */
+ion-card:active, ion-card:hover {
+  transform: scale(1.03); 
+  background: rgba(20, 20, 35, 0.6) !important;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+  z-index: 10;
+}
+
+/* --- IMPORTANTE: LISTAS TRANSPARENTES --- */
+ion-list {
+  background: transparent !important;
+  contain: none; /* Permite que el contenido se salga si hace falta */
+  padding-top: 10px;
+}
+
+/* Items dentro de cards totalmente transparentes */
+ion-card ion-item {
+  --background: transparent;
+  --inner-padding-end: 0;
+}
+
+/* --- 4. ANIMACIÓN DE ENTRADA EN CASCADA --- */
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Aplica a items y cards dentro de listas */
+ion-list ion-card, ion-list ion-item {
+  animation: slideInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 0; /* Empiezan invisibles */
+}
+
+/* Bucle para retrasar cada elemento (Efecto cascada) */
+@for $i from 1 through 15 {
+  ion-list ion-card:nth-child(#{$i}), 
+  ion-list ion-item:nth-child(#{$i}) {
+    animation-delay: #{$i * 0.08}s;
+  }
+}
+
+/* Items de listas transparentes */
+ion-item {
+  --background: transparent;
+  --color: white;
+  margin-bottom: 5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* --- 5. TÍTULOS CON EFECTO GLITCH (FALLO DE MATRIZ) --- */
+.glitch {
+  position: relative;
+  color: white;
+  font-weight: 700;
+  letter-spacing: 2px;
+  display: inline-block;
+}
+
+.glitch::before, .glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #050510; /* Truco: tapa el texto original */
+}
+
+.glitch::before {
+  left: 2px;
+  text-shadow: -1px 0 #ff00c1; /* Sombra rosa */
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim 4s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+  left: -2px;
+  text-shadow: -1px 0 #00fff9; /* Sombra cian */
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim2 4s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+  0% { clip: rect(38px, 9999px, 84px, 0); }
+  5% { clip: rect(66px, 9999px, 14px, 0); }
+  100% { clip: rect(5px, 9999px, 86px, 0); }
+}
+@keyframes glitch-anim2 {
+  0% { clip: rect(10px, 9999px, 81px, 0); }
+  5% { clip: rect(72px, 9999px, 12px, 0); }
+  100% { clip: rect(36px, 9999px, 31px, 0); }
+}
+
+/* --- 6. SEARCHBAR OSCURA --- */
+ion-searchbar {
+  --background: rgba(0,0,0,0.4);
+  --color: white;
+  --placeholder-color: #aaa;
+  --icon-color: var(--neon-cyan);
+  --border-radius: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* --- 7. BARRA DE PESTAÑAS (TABS) - CRISTAL ULTRA TRANSPARENTE --- */
+ion-tab-bar {
+  /* Fondo casi invisible (20% opacidad) para ver pasar las estrellas */
+  --background: rgba(5, 5, 16, 0.20); 
+  
+  /* Desenfoque fuerte para mantener la legibilidad sobre las estrellas */
+  backdrop-filter: blur(15px); 
+  
+  /* Borde superior muy sutil */
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  
+  /* Eliminamos sombras pesadas para que parezca flotar de verdad */
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3);
+  
+  padding-bottom: 5px;
+  padding-top: 5px;
+  position: absolute; /* Truco: ayuda a que el fondo pase por debajo en algunos navegadores */
+  bottom: 0;
+  width: 100%;
+}
+
+/* Efecto para el botón seleccionado */
+ion-tab-button-selected {
+  background: transparent;
+}
+
+ion-tab-button-selected ion-icon {
+  color: var(--neon-cyan);
+  filter: drop-shadow(0 0 10px var(--neon-cyan));
+  transform: translateY(-3px) scale(1.1); /* Sube y crece un poco más */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+ion-tab-button-selected ion-label {
+  color: var(--neon-cyan);
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
+}
+
+/* Efecto para botones NO seleccionados */
+ion-tab-button:not(.ion-tab-button-selected) ion-icon {
+  color: rgba(255, 255, 255, 0.4); /* Blanco muy apagado */
+  transition: color 0.3s ease;
+}
