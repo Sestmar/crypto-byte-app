@@ -4,13 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, 
   IonCard, IonCardContent, IonCardHeader, IonCardTitle,
-  IonChip, IonIcon, IonLabel, IonSpinner, IonGrid, IonRow, IonCol, IonFab, IonFabButton
+  IonChip, IonIcon, IonLabel, IonSpinner, IonGrid, IonRow, IonCol, IonFab, IonFabButton,
+  AlertController // <--- IMPORTANTE
 } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
 import { CryptoService } from 'src/app/core/services/crypto.service';
 import { PortfolioService } from 'src/app/core/services/portfolio.service';
 import { addIcons } from 'ionicons';
-import { caretUp, caretDown, heart, heartOutline } from 'ionicons/icons';
+// Nuevos iconos: add y checkmark-circle
+import { caretUp, caretDown, heart, heartOutline, add, checkmarkCircle } from 'ionicons/icons';
 import { Chart, LineController, LineElement, PointElement, LinearScale, Title, CategoryScale, Filler, Tooltip } from 'chart.js';
 
 @Component({
@@ -30,24 +32,28 @@ export class CoinDetailPage implements OnInit {
   private cryptoService = inject(CryptoService);
   private portfolioService = inject(PortfolioService);
   private cdr = inject(ChangeDetectorRef);
+  private alertController = inject(AlertController); // <--- INYECCIÓN
 
   @ViewChild('lineCanvas') lineCanvas: ElementRef | undefined;
   chart: any;
 
   coin: any = null;
   loading = true;
-  isFavorite = false;
+  
+  // En vez de isFavorite, ahora controlamos la cantidad
+  // null = no la tienes. numero = cantidad que tienes.
+  currentAmount: number | null = null; 
 
   constructor() {
-    addIcons({ caretUp, caretDown, heart, heartOutline });
+    addIcons({ caretUp, caretDown, heart, heartOutline, add, checkmarkCircle });
     Chart.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale, Filler, Tooltip);
   }
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      // 1. Verificar si es favorito en Firebase (Async)
-      this.isFavorite = await this.portfolioService.isFavorite(id);
+      // 1. Verificamos si ya tenemos esta moneda y cuánta
+      this.currentAmount = await this.portfolioService.getAssetAmount(id);
       
       this.cryptoService.getCoinDetail(id).subscribe({
         next: (data) => {
@@ -63,7 +69,7 @@ export class CoinDetailPage implements OnInit {
     }
   }
 
-  // --- LÓGICA DE CHART (Igual que antes) ---
+  // --- LÓGICA DE CHART (INTACTA) ---
   loadChart(id: string, currentPrice: number) {
     this.cryptoService.getMarketChart(id).subscribe({
       next: (data) => {
@@ -144,20 +150,71 @@ export class CoinDetailPage implements OnInit {
     }
   }
 
-  // --- LÓGICA DE FAVORITOS ACTUALIZADA ---
-  async toggleFavorite() {
+  // --- NUEVA LÓGICA DE PORTFOLIO (Alertas) ---
+
+  async handlePortfolioAction() {
     if (!this.coin) return;
 
-    const coinId = this.coin.id;
-
-    if (this.isFavorite) {
-      // Si ya es favorito, lo quitamos de Firebase
-      await this.portfolioService.removeCoin(coinId);
-      this.isFavorite = false;
+    if (this.currentAmount !== null) {
+      // YA LA TIENES -> PREGUNTAR SI BORRAR O EDITAR
+      this.presentEditOrDeleteAlert();
     } else {
-      // Si no lo es, lo añadimos
-      await this.portfolioService.addCoin(coinId);
-      this.isFavorite = true;
+      // NO LA TIENES -> AÑADIR NUEVA
+      this.presentAddAlert();
     }
+  }
+
+  async presentAddAlert() {
+    const alert = await this.alertController.create({
+      header: 'Add to Portfolio',
+      subHeader: this.coin.name,
+      message: 'Enter the amount you hold:',
+      inputs: [
+        {
+          name: 'amount',
+          type: 'number',
+          placeholder: '0.00',
+          min: 0
+        }
+      ],
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Save',
+          handler: async (data) => {
+            if (data.amount) {
+              await this.portfolioService.saveAsset(this.coin.id, parseFloat(data.amount));
+              this.currentAmount = parseFloat(data.amount); // Actualizamos vista
+            }
+          }
+        }
+      ],
+      cssClass: 'cyber-alert' // Usaremos estilos globales si quieres personalizarlos
+    });
+    await alert.present();
+  }
+
+  async presentEditOrDeleteAlert() {
+    const alert = await this.alertController.create({
+      header: 'Manage Asset',
+      message: `You hold ${this.currentAmount} ${this.coin.symbol.toUpperCase()}`,
+      buttons: [
+        {
+          text: 'Update Amount',
+          handler: () => this.presentAddAlert() // Reusamos la de añadir
+        },
+        {
+          text: 'Remove Asset',
+          role: 'destructive',
+          handler: async () => {
+            await this.portfolioService.removeAsset(this.coin.id);
+            this.currentAmount = null;
+          }
+        },
+        { text: 'Cancel', role: 'cancel' }
+      ],
+      cssClass: 'cyber-alert'
+    });
+    await alert.present();
   }
 }

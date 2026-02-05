@@ -84,8 +84,13 @@
   </div>
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button (click)="toggleFavorite()" [color]="isFavorite ? 'primary' : 'light'" class="fav-fab">
-      <ion-icon [name]="isFavorite ? 'heart' : 'heart-outline'"></ion-icon>
+    <ion-fab-button 
+      (click)="handlePortfolioAction()" 
+      [color]="currentAmount !== null ? 'primary' : 'light'" 
+      class="fav-fab">
+      
+      <ion-icon [name]="currentAmount !== null ? 'checkmark-circle' : 'add'"></ion-icon>
+    
     </ion-fab-button>
   </ion-fab>
 </ion-content>

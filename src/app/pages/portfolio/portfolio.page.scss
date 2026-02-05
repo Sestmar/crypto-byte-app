@@ -32,4 +32,45 @@
       inset 0 0 10px rgba(255, 7, 58, 0.5);
     transform: scale(1.1); /* Crece un poco */
   }
+
+  /* Tarjeta de Balance Total */
+.balance-card {
+  text-align: center;
+  margin: 20px;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  
+  p {
+    color: #888;
+    margin: 0;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+  }
+  
+  h1 {
+    font-family: 'Orbitron';
+    font-size: 2.5rem;
+    color: white;
+    margin: 10px 0 0;
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+  }
+}
+
+/* Ajustes de la lista */
+.row-top, .row-bottom {
+  display: flex;
+  justify-content: space-between;
+}
+
+.price-value {
+  color: white;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.text-green { color: var(--neon-green); }
+.text-red { color: var(--neon-red); }
 }

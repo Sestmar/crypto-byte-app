@@ -3,14 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, 
-  IonAvatar, IonLabel, IonText, IonButtons, IonButton, IonIcon, IonSpinner,
-  IonCard
+  IonAvatar, IonLabel, IonText, IonButtons, IonButton, IonIcon, 
+  IonSpinner, IonCard,
+  // --- AÑADIMOS ESTOS IMPORTS QUE FALTABAN ---
+  IonItemSliding, IonItemOptions, IonItemOption 
 } from '@ionic/angular/standalone';
 import { RouterLink, Router } from '@angular/router'; 
-import { PortfolioService } from 'src/app/core/services/portfolio.service';
+import { PortfolioService, Asset } from 'src/app/core/services/portfolio.service';
 import { CryptoService } from 'src/app/core/services/crypto.service';
 import { addIcons } from 'ionicons';
-// CORRECCIÓN ICONOS: Importamos trashOutline explícitamente
 import { trashOutline, settingsOutline } from 'ionicons/icons';
 
 @Component({
@@ -21,7 +22,9 @@ import { trashOutline, settingsOutline } from 'ionicons/icons';
   imports: [
     IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, 
     IonAvatar, IonLabel, IonText, IonButtons, IonButton, IonIcon, 
-    IonSpinner, CommonModule, FormsModule, RouterLink, IonCard
+    IonSpinner, CommonModule, FormsModule, RouterLink, IonCard,
+    // --- Y LOS AÑADIMOS AQUÍ TAMBIÉN ---
+    IonItemSliding, IonItemOptions, IonItemOption
   ]
 })
 export class PortfolioPage {
@@ -31,10 +34,9 @@ export class PortfolioPage {
   
   myCoins: any[] = [];
   loading = false;
-  error = false; // Para controlar si falla la carga
+  totalBalance = 0;
 
   constructor() {
-    // REGISTRAMOS EL ICONO CON EL NOMBRE CORRECTO
     addIcons({ 'trash-outline': trashOutline, 'settings-outline': settingsOutline });
   }
 
@@ -44,29 +46,42 @@ export class PortfolioPage {
 
   loadPortfolio() {
     this.loading = true;
-    this.error = false;
+    this.totalBalance = 0;
     
-    // 1. Pedimos los IDs favoritos a Firebase
-    this.portfolioService.getFavorites().subscribe({
-      next: (favoriteIds) => {
-        console.log('Favoritos recuperados:', favoriteIds);
-
-        if (!favoriteIds || favoriteIds.length === 0) {
+    // 1. Pedimos la lista de ACTIVOS a Firebase
+    this.portfolioService.getPortfolio().subscribe({
+      next: (assets: Asset[]) => {
+        
+        if (!assets || assets.length === 0) {
           this.myCoins = [];
           this.loading = false;
           return;
         }
 
-        // 2. OPTIMIZACIÓN: Pedimos SOLO las monedas que necesitamos
-        // Esto evita el error de CORS/Límites por pedir demasiados datos
-        this.cryptoService.getCoinsByIds(favoriteIds).subscribe({
-          next: (coinsData) => {
-            this.myCoins = coinsData;
+        // 2. Extraemos IDs para pedir precios
+        const ids = assets.map(a => a.id);
+
+        this.cryptoService.getCoinsByIds(ids).subscribe({
+          next: (apiCoins) => {
+            // 3. FUSIÓN DE DATOS
+            this.myCoins = apiCoins.map(coin => {
+              const matchingAsset = assets.find(a => a.id === coin.id);
+              const amount = matchingAsset ? matchingAsset.amount : 0;
+              const value = amount * coin.current_price;
+
+              this.totalBalance += value;
+
+              return {
+                ...coin,
+                amount: amount,
+                totalValue: value
+              };
+            });
+
             this.loading = false;
           },
           error: (err) => {
-            console.error('Error cargando datos de monedas:', err);
-            this.error = true; // Podrías mostrar un mensaje de error en el HTML
+            console.error('Error API:', err);
             this.loading = false;
           }
         });
@@ -83,10 +98,8 @@ export class PortfolioPage {
   }
 
   async remove(coin: any) {
-    // Borramos de Firebase
-    await this.portfolioService.removeCoin(coin.id);
-    
-    // Borramos visualmente de la lista al instante
+    await this.portfolioService.removeAsset(coin.id);
+    this.totalBalance -= coin.totalValue;
     this.myCoins = this.myCoins.filter(c => c.id !== coin.id);
   }
 }
