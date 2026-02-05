@@ -30,13 +30,42 @@
       </div>
       
       <h1 class="main-price">
-        {{ coin.market_data.current_price.usd | currency:'USD' }}
+        {{ coin.market_data.current_price.usd | currency:'USD':'symbol':(coin.market_data.current_price.usd < 1 ? '1.2-8' : '1.2-2') }}
       </h1>
       
       <ion-chip [color]="coin.market_data.price_change_percentage_24h >= 0 ? 'success' : 'danger'" mode="ios" outline="true">
         <ion-icon [name]="coin.market_data.price_change_percentage_24h >= 0 ? 'caret-up' : 'caret-down'"></ion-icon>
         <ion-label>{{ coin.market_data.price_change_percentage_24h | number:'1.2-2' }}% (24h)</ion-label>
       </ion-chip>
+    </div>
+
+    <div class="position-card fade-in" *ngIf="currentAsset">
+      <div class="pos-header">
+        <ion-icon name="wallet-outline"></ion-icon>
+        <span>YOUR POSITION</span>
+      </div>
+      
+      <div class="pos-grid">
+        <div class="pos-item">
+          <span class="label">Holdings</span>
+          <span class="value">{{ currentAsset.amount }} {{ coin.symbol | uppercase }}</span>
+        </div>
+        <div class="pos-item right">
+          <span class="label">Total Value</span>
+          <span class="value white">{{ myPosition.totalValue | currency:'USD':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="pos-item">
+          <span class="label">Avg. Buy Price</span>
+          <span class="value">{{ currentAsset.buyPrice | currency:'USD':'symbol':(currentAsset.buyPrice! < 1 ? '1.2-8' : '1.2-2') }}</span>
+        </div>
+        <div class="pos-item right">
+          <span class="label">PnL</span>
+          <span class="value" [class.profit]="myPosition.pnl >= 0" [class.loss]="myPosition.pnl < 0">
+            {{ myPosition.pnl >= 0 ? '+' : '' }}{{ myPosition.pnl | currency:'USD':'symbol':'1.2-2' }}
+            <small>({{ myPosition.pnlPercent | number:'1.2-2' }}%)</small>
+          </span>
+        </div>
+      </div>
     </div>
 
     <div class="chart-container">
@@ -88,9 +117,7 @@
       (click)="handlePortfolioAction()" 
       [color]="currentAsset ? 'primary' : 'light'" 
       class="fav-fab">
-      
       <ion-icon [name]="currentAsset ? 'checkmark-circle' : 'add'"></ion-icon>
-    
     </ion-fab-button>
   </ion-fab>
 </ion-content>

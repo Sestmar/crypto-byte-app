@@ -11,7 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CryptoService } from 'src/app/core/services/crypto.service';
 import { PortfolioService, Asset } from 'src/app/core/services/portfolio.service';
 import { addIcons } from 'ionicons';
-import { caretUp, caretDown, heart, heartOutline, add, checkmarkCircle } from 'ionicons/icons';
+import { caretUp, caretDown, heart, heartOutline, add, checkmarkCircle, walletOutline, trendingUpOutline, trendingDownOutline } from 'ionicons/icons';
 import { Chart, LineController, LineElement, PointElement, LinearScale, Title, CategoryScale, Filler, Tooltip } from 'chart.js';
 
 @Component({
@@ -32,7 +32,7 @@ export class CoinDetailPage implements OnInit {
   private portfolioService = inject(PortfolioService);
   private cdr = inject(ChangeDetectorRef);
   private alertController = inject(AlertController);
-  private toastController = inject(ToastController); // <--- NUEVO: Para mostrar mensajes
+  private toastController = inject(ToastController);
 
   @ViewChild('lineCanvas') lineCanvas: ElementRef | undefined;
   chart: any;
@@ -41,8 +41,16 @@ export class CoinDetailPage implements OnInit {
   loading = true;
   currentAsset: Asset | null = null; 
 
+  // NUEVO: Objeto para guardar los cálculos de TU posición
+  myPosition = {
+    totalValue: 0,
+    pnl: 0,
+    pnlPercent: 0
+  };
+
   constructor() {
-    addIcons({ caretUp, caretDown, heart, heartOutline, add, checkmarkCircle });
+    // Añadimos iconos nuevos para la tarjeta de posición
+    addIcons({ caretUp, caretDown, heart, heartOutline, add, checkmarkCircle, walletOutline, trendingUpOutline, trendingDownOutline });
     Chart.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale, Filler, Tooltip);
   }
 
@@ -58,6 +66,10 @@ export class CoinDetailPage implements OnInit {
       this.cryptoService.getCoinDetail(id).subscribe({
         next: (data) => {
           this.coin = data;
+          
+          // CALCULAMOS TU POSICIÓN AL CARGAR LOS DATOS
+          this.calculatePosition();
+
           this.loading = false;
           this.cdr.detectChanges();
           this.loadChart(id, data.market_data.current_price.usd);
@@ -67,7 +79,29 @@ export class CoinDetailPage implements OnInit {
     }
   }
 
-  // --- CHART (Sin cambios) ---
+  // --- NUEVA FUNCIÓN: CALCULA GANANCIAS/PÉRDIDAS ---
+  calculatePosition() {
+    if (this.currentAsset && this.coin) {
+      const currentPrice = this.coin.market_data.current_price.usd;
+      const amount = this.currentAsset.amount;
+      const buyPrice = this.currentAsset.buyPrice || 0;
+
+      const currentValue = amount * currentPrice;
+      const investedValue = amount * buyPrice;
+
+      this.myPosition.totalValue = currentValue;
+      
+      if (buyPrice > 0) {
+        this.myPosition.pnl = currentValue - investedValue;
+        this.myPosition.pnlPercent = (this.myPosition.pnl / investedValue) * 100;
+      } else {
+        this.myPosition.pnl = 0;
+        this.myPosition.pnlPercent = 0;
+      }
+    }
+  }
+
+  // --- CHART ---
   loadChart(id: string, currentPrice: number) {
     this.cryptoService.getMarketChart(id).subscribe({
       next: (data) => {
@@ -149,7 +183,7 @@ export class CoinDetailPage implements OnInit {
         {
           name: 'amount',
           type: 'number',
-          placeholder: 'Amount (e.g. 0.5)',
+          placeholder: 'Amount',
           min: 0,
           value: this.currentAsset ? this.currentAsset.amount : ''
         },
@@ -165,10 +199,9 @@ export class CoinDetailPage implements OnInit {
         {
           text: 'Save',
           handler: async (data) => {
-            // VALIDACIÓN MÁS FLEXIBLE
             if (!data.amount || !data.buyPrice) {
               this.showToast('Please fill in both Amount and Price', 'danger');
-              return false; // Mantiene la alerta abierta si hay error
+              return false;
             }
 
             try {
@@ -178,19 +211,21 @@ export class CoinDetailPage implements OnInit {
                 parseFloat(data.buyPrice)
               );
               
-              // Actualizamos vista
               this.currentAsset = { 
                 id: this.coin.id,
                 amount: parseFloat(data.amount),
                 buyPrice: parseFloat(data.buyPrice)
               };
 
+              // RECALCULAMOS AL GUARDAR
+              this.calculatePosition();
+
               this.showToast('Asset saved successfully!', 'success');
               return true;
 
             } catch (error) {
               console.error(error);
-              this.showToast('Error saving asset. Try again.', 'danger');
+              this.showToast('Error saving asset', 'danger');
               return false;
             }
           }
@@ -204,7 +239,7 @@ export class CoinDetailPage implements OnInit {
   async presentEditOrDeleteAlert() {
     const alert = await this.alertController.create({
       header: 'Manage Asset',
-      message: `You hold ${this.currentAsset?.amount} ${this.coin.symbol.toUpperCase()}`,
+      message: `Holding: ${this.currentAsset?.amount} ${this.coin.symbol.toUpperCase()}`,
       buttons: [
         {
           text: 'Edit Position',
@@ -216,6 +251,7 @@ export class CoinDetailPage implements OnInit {
           handler: async () => {
             await this.portfolioService.removeAsset(this.coin.id);
             this.currentAsset = null;
+            this.myPosition = { totalValue: 0, pnl: 0, pnlPercent: 0 }; // Limpiamos datos
             this.showToast('Asset removed', 'warning');
           }
         },
@@ -226,7 +262,6 @@ export class CoinDetailPage implements OnInit {
     await alert.present();
   }
 
-  // Helper para mostrar mensajes
   async showToast(msg: string, color: string) {
     const toast = await this.toastController.create({
       message: msg,

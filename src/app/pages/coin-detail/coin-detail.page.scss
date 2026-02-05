@@ -87,3 +87,72 @@
 .fav-fab {
   --box-shadow: 0 0 15px var(--neon-pink);
 }
+
+/* --- TARJETA DE POSICIÓN (MY POSITION) --- */
+.position-card {
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 12px;
+  background: rgba(0, 243, 255, 0.05); /* Cian muy sutil */
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.pos-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+  color: var(--neon-cyan);
+  font-family: 'Orbitron';
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(0, 243, 255, 0.1);
+  padding-bottom: 5px;
+}
+
+.pos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.pos-item {
+  display: flex;
+  flex-direction: column;
+  
+  &.right { align-items: flex-end; } /* Alinea a la derecha la columna 2 */
+
+  .label {
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 4px;
+  }
+
+  .value {
+    font-family: 'Rajdhani';
+    font-size: 1rem;
+    color: #ccc;
+    font-weight: 600;
+    
+    &.white { color: white; font-size: 1.1rem; }
+  }
+}
+
+/* Colores de PnL */
+.profit { color: var(--neon-green) !important; text-shadow: 0 0 5px rgba(0,255,157,0.3); }
+.loss { color: var(--neon-red) !important; text-shadow: 0 0 5px rgba(255,7,58,0.3); }
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- AJUSTES EXTRA --- */
+.main-price {
+  /* Hacemos el precio principal un poco más adaptable */
+  font-size: 2.5rem;
+  margin: 10px 0;
+}
