@@ -4,15 +4,19 @@ import { FormsModule } from '@angular/forms';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, 
   IonAvatar, IonLabel, IonText, IonButtons, IonButton, IonIcon, 
-  IonSpinner, IonCard,
-  // --- AÑADIMOS ESTOS IMPORTS QUE FALTABAN ---
-  IonItemSliding, IonItemOptions, IonItemOption 
+  IonSpinner, IonCard, IonItemSliding, IonItemOptions, IonItemOption, 
+  IonGrid, IonRow, IonCol, IonListHeader
 } from '@ionic/angular/standalone';
 import { RouterLink, Router } from '@angular/router'; 
 import { PortfolioService, Asset } from 'src/app/core/services/portfolio.service';
 import { CryptoService } from 'src/app/core/services/crypto.service';
 import { addIcons } from 'ionicons';
-import { trashOutline, settingsOutline } from 'ionicons/icons';
+// IMPORTAMOS TODOS LOS NUEVOS ICONOS NECESARIOS
+import { 
+  trashOutline, settingsOutline, eyeOutline, eyeOffOutline, 
+  swapHorizontalOutline, walletOutline, arrowDownCircleOutline, 
+  arrowUpCircleOutline 
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-portfolio',
@@ -23,8 +27,8 @@ import { trashOutline, settingsOutline } from 'ionicons/icons';
     IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, 
     IonAvatar, IonLabel, IonText, IonButtons, IonButton, IonIcon, 
     IonSpinner, CommonModule, FormsModule, RouterLink, IonCard,
-    // --- Y LOS AÑADIMOS AQUÍ TAMBIÉN ---
-    IonItemSliding, IonItemOptions, IonItemOption
+    IonItemSliding, IonItemOptions, IonItemOption, IonGrid, IonRow, IonCol,
+    IonListHeader
   ]
 })
 export class PortfolioPage {
@@ -34,72 +38,93 @@ export class PortfolioPage {
   
   myCoins: any[] = [];
   loading = false;
-  totalBalance = 0;
+  
+  // Variables financieras
+  totalBalanceUSD = 0;
+  totalInvested = 0;
+  totalPnL = 0;        // Ganancia/Pérdida en $
+  totalPnLPercent = 0; // Ganancia/Pérdida en %
+  
+  // Vista (Toggle visual)
+  hideBalance = false; // Para ocultar el saldo ****
+  showInBTC = false;   // Para cambiar entre USD y BTC
 
   constructor() {
-    addIcons({ 'trash-outline': trashOutline, 'settings-outline': settingsOutline });
+    // Registramos los iconos
+    addIcons({ 
+      trashOutline, settingsOutline, eyeOutline, eyeOffOutline, 
+      swapHorizontalOutline, walletOutline, arrowDownCircleOutline, 
+      arrowUpCircleOutline 
+    });
   }
 
   ionViewWillEnter() {
     this.loadPortfolio();
   }
 
+  // Funciones para los botones de la interfaz
+  toggleVisibility() { this.hideBalance = !this.hideBalance; }
+  toggleCurrency() { this.showInBTC = !this.showInBTC; }
+  openSettings() { this.router.navigate(['/settings']); }
+
   loadPortfolio() {
     this.loading = true;
-    this.totalBalance = 0;
+    this.totalBalanceUSD = 0;
+    this.totalInvested = 0;
     
-    // 1. Pedimos la lista de ACTIVOS a Firebase
     this.portfolioService.getPortfolio().subscribe({
       next: (assets: Asset[]) => {
-        
         if (!assets || assets.length === 0) {
           this.myCoins = [];
           this.loading = false;
           return;
         }
 
-        // 2. Extraemos IDs para pedir precios
         const ids = assets.map(a => a.id);
 
         this.cryptoService.getCoinsByIds(ids).subscribe({
           next: (apiCoins) => {
-            // 3. FUSIÓN DE DATOS
             this.myCoins = apiCoins.map(coin => {
-              const matchingAsset = assets.find(a => a.id === coin.id);
-              const amount = matchingAsset ? matchingAsset.amount : 0;
-              const value = amount * coin.current_price;
+              const asset = assets.find(a => a.id === coin.id);
+              const amount = asset ? asset.amount : 0;
+              const buyPrice = asset?.buyPrice || 0; // Si es antiguo será 0
 
-              this.totalBalance += value;
+              // Cálculos por moneda
+              const currentValue = amount * coin.current_price;
+              const investedValue = amount * buyPrice;
+              
+              // Ganancia individual
+              const pnl = currentValue - investedValue;
+              const pnlPercent = buyPrice > 0 ? (pnl / investedValue) * 100 : 0;
+
+              // Sumas globales
+              this.totalBalanceUSD += currentValue;
+              if (buyPrice > 0) this.totalInvested += investedValue;
 
               return {
                 ...coin,
-                amount: amount,
-                totalValue: value
+                amount,
+                buyPrice,
+                totalValue: currentValue,
+                pnl,        // Dato para pintar verde/rojo
+                pnlPercent
               };
             });
 
+            // Cálculos Globales del Portfolio
+            this.totalPnL = this.totalBalanceUSD - this.totalInvested;
+            this.totalPnLPercent = this.totalInvested > 0 ? (this.totalPnL / this.totalInvested) * 100 : 0;
+
             this.loading = false;
           },
-          error: (err) => {
-            console.error('Error API:', err);
-            this.loading = false;
-          }
+          error: () => this.loading = false
         });
-      },
-      error: (err) => {
-        console.error("Error Firebase:", err);
-        this.loading = false;
       }
     });
   }
 
-  openSettings() {
-    this.router.navigate(['/settings']);
-  }
-
   async remove(coin: any) {
     await this.portfolioService.removeAsset(coin.id);
-    this.totalBalance -= coin.totalValue;
-    this.myCoins = this.myCoins.filter(c => c.id !== coin.id);
+    this.loadPortfolio(); // Recargamos para recalcular totales
   }
 }

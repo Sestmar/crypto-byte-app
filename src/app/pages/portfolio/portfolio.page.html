@@ -1,9 +1,12 @@
 <ion-header [translucent]="true" class="ion-no-border">
   <ion-toolbar>
-    <ion-title>CRYPTO WALLET</ion-title>
+    <ion-buttons slot="start">
+       <ion-button><ion-icon name="wallet-outline"></ion-icon></ion-button>
+    </ion-buttons>
+    <ion-title>ASSETS OVERVIEW</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="openSettings()">
-        <ion-icon slot="icon-only" name="settings-outline" color="secondary"></ion-icon>
+        <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -15,9 +18,42 @@
     <div class="stars2"></div>
   </div>
 
-  <div class="balance-card">
-    <p>TOTAL BALANCE</p>
-    <h1>{{ totalBalance | currency:'USD':'symbol':'1.2-2' }}</h1>
+  <div class="dashboard-card">
+    
+    <div class="balance-header">
+      <span class="label">Total Balance (Est.)</span>
+      <ion-icon [name]="hideBalance ? 'eye-off-outline' : 'eye-outline'" (click)="toggleVisibility()"></ion-icon>
+    </div>
+
+    <h1 class="main-balance" *ngIf="!hideBalance">
+      <span *ngIf="!showInBTC">{{ totalBalanceUSD | currency:'USD':'symbol':'1.2-2' }}</span>
+      <span *ngIf="showInBTC">≈ {{ (totalBalanceUSD / 95000) | number:'1.6-6' }} BTC</span> 
+      
+      <ion-icon name="swap-horizontal-outline" class="swap-icon" (click)="toggleCurrency()"></ion-icon>
+    </h1>
+
+    <h1 class="main-balance hidden-text" *ngIf="hideBalance">******</h1>
+
+    <div class="pnl-badge" [class.profit]="totalPnL >= 0" [class.loss]="totalPnL < 0" *ngIf="!hideBalance">
+      <span class="pnl-val">{{ totalPnL >= 0 ? '+' : '' }}{{ totalPnL | currency:'USD':'symbol':'1.2-2' }}</span>
+      <span class="pnl-pct">({{ totalPnLPercent | number:'1.2-2' }}%)</span>
+      <span class="time-label">All Time</span>
+    </div>
+
+    <div class="action-grid">
+      <div class="action-btn">
+        <div class="icon-circle filled"><ion-icon name="arrow-down-circle-outline"></ion-icon></div>
+        <span>Deposit</span>
+      </div>
+      <div class="action-btn">
+        <div class="icon-circle"><ion-icon name="arrow-up-circle-outline"></ion-icon></div>
+        <span>Withdraw</span>
+      </div>
+      <div class="action-btn">
+        <div class="icon-circle"><ion-icon name="swap-horizontal-outline"></ion-icon></div>
+        <span>Transfer</span>
+      </div>
+    </div>
   </div>
 
   <div class="ion-text-center ion-padding" *ngIf="loading">
@@ -33,9 +69,12 @@
     </ion-button>
   </div>
 
-  <ion-list lines="none">
+  <ion-list lines="none" class="asset-list" *ngIf="myCoins.length > 0">
+    <ion-list-header>
+      <ion-label>Crypto Assets</ion-label>
+    </ion-list-header>
+
     <ion-item-sliding *ngFor="let coin of myCoins" class="coin-item-sliding">
-      
       <ion-item button [routerLink]="['/coin-detail', coin.id]" detail="false">
         <ion-avatar slot="start">
           <img [src]="coin.image" />
@@ -43,15 +82,17 @@
         
         <ion-label>
           <div class="row-top">
-            <h2>{{ coin.name }}</h2>
+            <h2>{{ coin.symbol | uppercase }}</h2>
             <h2 class="price-value">{{ coin.totalValue | currency:'USD':'symbol':'1.2-2' }}</h2>
           </div>
           
           <div class="row-bottom">
-            <p>{{ coin.amount }} {{ coin.symbol | uppercase }}</p>
-            <p [class.text-green]="coin.price_change_percentage_24h >= 0" 
-               [class.text-red]="coin.price_change_percentage_24h < 0">
-              {{ coin.current_price | currency:'USD' }}
+            <p>{{ coin.amount }} coins</p>
+            <p [class.text-green]="coin.pnl >= 0" [class.text-red]="coin.pnl < 0" *ngIf="coin.buyPrice > 0">
+              {{ coin.pnl >= 0 ? '+' : '' }}{{ coin.pnlPercent | number:'1.2-2' }}%
+            </p>
+            <p style="color: #666" *ngIf="!coin.buyPrice || coin.buyPrice === 0">
+              Set Buy Price
             </p>
           </div>
         </ion-label>
@@ -62,7 +103,6 @@
           <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
         </ion-item-option>
       </ion-item-options>
-    
     </ion-item-sliding>
   </ion-list>
   

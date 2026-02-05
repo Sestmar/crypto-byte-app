@@ -3,9 +3,11 @@ import { Firestore, collection, doc, setDoc, deleteDoc, getDoc, collectionData }
 import { Auth, authState } from '@angular/fire/auth';
 import { Observable, of, switchMap } from 'rxjs';
 
+// MODIFICACIÓN: Añadimos buyPrice opcional
 export interface Asset {
   id: string;
   amount: number;
+  buyPrice?: number; // Nuevo campo para calcular PnL
 }
 
 @Injectable({
@@ -15,45 +17,43 @@ export class PortfolioService {
   private firestore = inject(Firestore);
   private auth = inject(Auth);
 
-  // 1. OBTENER PORTFOLIO (HOLDINGS)
-  // Devuelve una lista en tiempo real: [{id: 'bitcoin', amount: 0.5}, ...]
+  // 1. OBTENER PORTFOLIO (Igual que antes)
   getPortfolio(): Observable<Asset[]> {
     return authState(this.auth).pipe(
       switchMap(user => {
         if (!user) return of([]);
-        
-        // Referencia a la sub-colección 'assets' del usuario
         const assetsRef = collection(this.firestore, `users/${user.uid}/assets`);
-        // idField: 'id' hace que el ID del documento se meta en el objeto como propiedad 'id'
         return collectionData(assetsRef, { idField: 'id' }) as Observable<Asset[]>;
       })
     );
   }
 
-  // 2. GUARDAR O ACTUALIZAR ACTIVO (Con cantidad)
-  async saveAsset(coinId: string, amount: number) {
+  // 2. GUARDAR ACTIVO (Ahora pide precio de compra)
+  async saveAsset(coinId: string, amount: number, buyPrice: number) {
     const user = this.auth.currentUser;
     if (!user) return;
 
     const assetDoc = doc(this.firestore, `users/${user.uid}/assets/${coinId}`);
+    
+    // Guardamos cantidad y precio de compra
     await setDoc(assetDoc, { 
       amount: amount,
+      buyPrice: buyPrice, 
       updatedAt: new Date()
     }, { merge: true });
   }
 
-  // 3. ELIMINAR ACTIVO
+  // 3. ELIMINAR (Igual que antes)
   async removeAsset(coinId: string) {
     const user = this.auth.currentUser;
     if (!user) return;
-
     const assetDoc = doc(this.firestore, `users/${user.uid}/assets/${coinId}`);
     await deleteDoc(assetDoc);
   }
 
-  // 4. VERIFICAR SI TENEMOS EL ACTIVO (Para saber si mostrar Add o Edit)
-  // Devuelve la cantidad si existe, o null si no lo tienes
-  async getAssetAmount(coinId: string): Promise<number | null> {
+  // 4. OBTENER DATOS DEL ACTIVO (Cantidad y Precio Compra)
+  // Útil para pre-llenar el formulario de edición
+  async getAssetData(coinId: string): Promise<Asset | null> {
     const user = this.auth.currentUser;
     if (!user) return null;
 
@@ -61,7 +61,7 @@ export class PortfolioService {
     const snapshot = await getDoc(assetDoc);
     
     if (snapshot.exists()) {
-      return snapshot.data()['amount'];
+      return snapshot.data() as Asset;
     }
     return null;
   }

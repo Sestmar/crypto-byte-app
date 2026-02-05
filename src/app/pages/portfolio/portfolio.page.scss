@@ -1,76 +1,172 @@
-/* Estilo para la tarjeta en Portfolio (más compacta que en Market) */
-.portfolio-card {
-  margin: 8px 16px;
-  backdrop-filter: blur(10px);
-  background: rgba(15, 15, 25, 0.5) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* --- EL NUEVO BOTÓN DE BORRAR CYBERPUNK --- */
-.cyber-delete-btn {
-  /* Estado normal: sutil, casi transparente */
-  --color: rgba(255, 7, 58, 0.7); /* Rojo semitransparente */
-  border: 1px solid rgba(255, 7, 58, 0.3); /* Borde fino rojo */
-  border-radius: 8px;
-  height: 40px;
-  width: 40px;
-  margin-right: 5px;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-
-  ion-icon {
-    font-size: 1.3rem;
-  }
-
-  /* Estado Hover/Active (al tocarlo): ¡EXPLOSIÓN DE NEÓN! */
-  &:hover, &:active {
-    --color: var(--neon-red); /* Rojo intenso */
-    background: rgba(255, 7, 58, 0.15); /* Fondo rojo sutil */
-    border-color: var(--neon-red);
-    /* Doble sombra para efecto resplandor intenso */
-    box-shadow: 
-      0 0 15px var(--neon-red),
-      inset 0 0 10px rgba(255, 7, 58, 0.5);
-    transform: scale(1.1); /* Crece un poco */
-  }
-
-  /* Tarjeta de Balance Total */
-.balance-card {
-  text-align: center;
-  margin: 20px;
-  padding: 30px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(0, 243, 255, 0.2);
+/* --- FONDO DEL DASHBOARD (La tarjeta principal) --- */
+.dashboard-card {
+  position: relative;
+  z-index: 10; /* Asegura que esté por encima de las estrellas */
+  margin: 15px;
+  padding: 25px;
   border-radius: 20px;
-  backdrop-filter: blur(10px);
   
-  p {
-    color: #888;
-    margin: 0;
-    font-size: 0.9rem;
-    letter-spacing: 2px;
-  }
+  /* Fondo oscuro semitransparente con degradado */
+  background: linear-gradient(180deg, rgba(20, 30, 48, 0.95) 0%, rgba(10, 15, 30, 0.8) 100%);
   
-  h1 {
-    font-family: 'Orbitron';
-    font-size: 2.5rem;
-    color: white;
-    margin: 10px 0 0;
-    text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
-  }
+  /* Borde neón sutil */
+  border: 1px solid rgba(0, 243, 255, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
 }
 
-/* Ajustes de la lista */
-.row-top, .row-bottom {
+/* Encabezado pequeño "Total Balance" */
+.balance-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  color: #888;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+  
+  ion-icon { font-size: 1.2rem; cursor: pointer; color: var(--neon-cyan); }
 }
 
-.price-value {
+/* El número grande del dinero */
+.main-balance {
+  font-family: 'Orbitron', sans-serif; /* Asegúrate de tener la fuente, si no usa sans-serif */
+  font-size: 2.4rem;
+  font-weight: 700;
   color: white;
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+  
+  /* Icono de cambio USD/BTC */
+  .swap-icon { 
+    font-size: 1.4rem; 
+    color: var(--neon-cyan); 
+    opacity: 0.8; 
+    cursor: pointer; 
+    transition: transform 0.3s;
+    
+    &:active { transform: rotate(180deg); }
+  }
+}
+
+/* Texto oculto ***** */
+.hidden-text { letter-spacing: 5px; font-size: 2rem; }
+
+/* Badge de Ganancia/Pérdida */
+.pnl-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.9rem;
   font-weight: bold;
-  letter-spacing: 0.5px;
+  font-family: 'Rajdhani', sans-serif;
+
+  &.profit { color: var(--neon-green); background: rgba(0, 255, 157, 0.1); border: 1px solid rgba(0, 255, 157, 0.2); }
+  &.loss { color: var(--neon-red); background: rgba(255, 7, 58, 0.1); border: 1px solid rgba(255, 7, 58, 0.2); }
+
+  .pnl-val { margin-right: 5px; }
+  .time-label { font-weight: normal; opacity: 0.6; font-size: 0.8rem; margin-left: 8px; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 8px; }
+}
+
+/* --- BOTONES DE ACCIÓN (Deposit, Withdraw...) --- */
+.action-grid {
+  display: flex;
+  justify-content: space-around; /* Distribuye el espacio uniformemente */
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 30%;
+  cursor: pointer;
+
+  span { color: #ccc; font-size: 0.8rem; letter-spacing: 0.5px; }
+  
+  .icon-circle {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    color: white;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255,255,255,0.1);
+
+    /* El primer botón relleno */
+    &.filled { 
+      background: var(--neon-cyan); 
+      color: #000; 
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+      border: none;
+    }
+  }
+
+  &:active .icon-circle { transform: scale(0.9); }
+}
+
+/* --- LISTA DE ACTIVOS --- */
+.asset-list {
+  background: transparent !important;
+  padding: 0 10px;
+}
+
+ion-list-header {
+  --background: transparent;
+  --color: #666;
+  font-family: 'Orbitron';
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  margin-top: 10px;
+  padding-left: 15px;
+}
+
+/* Filas dentro del item */
+.row-top {
+  display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4px;
+  h2 { font-weight: 800; font-size: 1.1rem; color: white; }
+  .price-value { font-family: 'Rajdhani'; font-size: 1.1rem; }
+}
+
+.row-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  p { font-size: 0.85rem; color: #888; }
 }
 
 .text-green { color: var(--neon-green); }
 .text-red { color: var(--neon-red); }
+
+/* --- BOTÓN BORRAR DESLIZANTE --- */
+.cyber-delete-bg {
+  --background: transparent; 
+  --color: var(--neon-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  
+  ion-icon { 
+    font-size: 1.8rem; 
+    filter: drop-shadow(0 0 5px var(--neon-red));
+  }
 }
+
+/* ESTADO VACÍO */
+.empty-state {
+  text-align: center;
+  margin-top: 60px;
+  opacity: 0.7;
+  p { color: #888; margin: 15px 0; }
+}
+
+/* Spinner */
+ion-spinner { margin-top: 20px; transform: scale(1.2); }

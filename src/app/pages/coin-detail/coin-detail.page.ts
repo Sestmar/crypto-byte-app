@@ -5,13 +5,12 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, 
   IonCard, IonCardContent, IonCardHeader, IonCardTitle,
   IonChip, IonIcon, IonLabel, IonSpinner, IonGrid, IonRow, IonCol, IonFab, IonFabButton,
-  AlertController // <--- IMPORTANTE
+  AlertController, ToastController 
 } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
 import { CryptoService } from 'src/app/core/services/crypto.service';
-import { PortfolioService } from 'src/app/core/services/portfolio.service';
+import { PortfolioService, Asset } from 'src/app/core/services/portfolio.service';
 import { addIcons } from 'ionicons';
-// Nuevos iconos: add y checkmark-circle
 import { caretUp, caretDown, heart, heartOutline, add, checkmarkCircle } from 'ionicons/icons';
 import { Chart, LineController, LineElement, PointElement, LinearScale, Title, CategoryScale, Filler, Tooltip } from 'chart.js';
 
@@ -32,17 +31,15 @@ export class CoinDetailPage implements OnInit {
   private cryptoService = inject(CryptoService);
   private portfolioService = inject(PortfolioService);
   private cdr = inject(ChangeDetectorRef);
-  private alertController = inject(AlertController); // <--- INYECCIÓN
+  private alertController = inject(AlertController);
+  private toastController = inject(ToastController); // <--- NUEVO: Para mostrar mensajes
 
   @ViewChild('lineCanvas') lineCanvas: ElementRef | undefined;
   chart: any;
 
   coin: any = null;
   loading = true;
-  
-  // En vez de isFavorite, ahora controlamos la cantidad
-  // null = no la tienes. numero = cantidad que tienes.
-  currentAmount: number | null = null; 
+  currentAsset: Asset | null = null; 
 
   constructor() {
     addIcons({ caretUp, caretDown, heart, heartOutline, add, checkmarkCircle });
@@ -52,16 +49,17 @@ export class CoinDetailPage implements OnInit {
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      // 1. Verificamos si ya tenemos esta moneda y cuánta
-      this.currentAmount = await this.portfolioService.getAssetAmount(id);
+      try {
+        this.currentAsset = await this.portfolioService.getAssetData(id);
+      } catch (error) {
+        console.error("Error cargando activo:", error);
+      }
       
       this.cryptoService.getCoinDetail(id).subscribe({
         next: (data) => {
           this.coin = data;
           this.loading = false;
-          
           this.cdr.detectChanges();
-          
           this.loadChart(id, data.market_data.current_price.usd);
         },
         error: () => this.loading = false
@@ -69,7 +67,7 @@ export class CoinDetailPage implements OnInit {
     }
   }
 
-  // --- LÓGICA DE CHART (INTACTA) ---
+  // --- CHART (Sin cambios) ---
   loadChart(id: string, currentPrice: number) {
     this.cryptoService.getMarketChart(id).subscribe({
       next: (data) => {
@@ -79,7 +77,7 @@ export class CoinDetailPage implements OnInit {
         this.createChart(labels, values);
       },
       error: (err) => {
-        console.warn("API Límite alcanzado, generando gráfica simulada.");
+        console.warn("API Error", err);
         this.generateFakeChart(currentPrice);
       }
     });
@@ -89,11 +87,8 @@ export class CoinDetailPage implements OnInit {
     const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const values = [];
     for (let i = 0; i < 7; i++) {
-      const volatility = basePrice * 0.05; 
-      const randomChange = (Math.random() - 0.5) * volatility;
-      values.push(basePrice + randomChange);
+      values.push(basePrice * (1 + (Math.random() * 0.1 - 0.05)));
     }
-    values[6] = basePrice;
     this.createChart(labels, values);
   }
 
@@ -125,56 +120,44 @@ export class CoinDetailPage implements OnInit {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { 
-            legend: { display: false },
-            tooltip: {
-              mode: 'index',
-              intersect: false,
-              backgroundColor: 'rgba(5, 5, 16, 0.9)',
-              titleColor: '#00f3ff',
-              bodyColor: '#fff',
-              borderColor: 'rgba(255,255,255,0.1)',
-              borderWidth: 1,
-              callbacks: {
-                label: (context) => `$${Number(context.raw).toLocaleString()}`
-              }
-            }
-          },
-          scales: {
-            x: { display: false }, 
-            y: { display: false } 
-          },
-          animation: { duration: 1500, easing: 'easeOutQuart' }
+          plugins: { legend: { display: false } },
+          scales: { x: { display: false }, y: { display: false } },
+          animation: { duration: 1500 }
         }
       });
     }
   }
 
-  // --- NUEVA LÓGICA DE PORTFOLIO (Alertas) ---
+  // --- GESTIÓN DE PORTFOLIO ---
 
   async handlePortfolioAction() {
     if (!this.coin) return;
-
-    if (this.currentAmount !== null) {
-      // YA LA TIENES -> PREGUNTAR SI BORRAR O EDITAR
+    if (this.currentAsset) {
       this.presentEditOrDeleteAlert();
     } else {
-      // NO LA TIENES -> AÑADIR NUEVA
       this.presentAddAlert();
     }
   }
 
   async presentAddAlert() {
+    const currentPrice = this.coin.market_data.current_price.usd;
+
     const alert = await this.alertController.create({
-      header: 'Add to Portfolio',
+      header: 'Add Transaction',
       subHeader: this.coin.name,
-      message: 'Enter the amount you hold:',
       inputs: [
         {
           name: 'amount',
           type: 'number',
-          placeholder: '0.00',
-          min: 0
+          placeholder: 'Amount (e.g. 0.5)',
+          min: 0,
+          value: this.currentAsset ? this.currentAsset.amount : ''
+        },
+        {
+          name: 'buyPrice',
+          type: 'number',
+          placeholder: 'Buy Price ($)',
+          value: this.currentAsset ? this.currentAsset.buyPrice : currentPrice
         }
       ],
       buttons: [
@@ -182,14 +165,38 @@ export class CoinDetailPage implements OnInit {
         {
           text: 'Save',
           handler: async (data) => {
-            if (data.amount) {
-              await this.portfolioService.saveAsset(this.coin.id, parseFloat(data.amount));
-              this.currentAmount = parseFloat(data.amount); // Actualizamos vista
+            // VALIDACIÓN MÁS FLEXIBLE
+            if (!data.amount || !data.buyPrice) {
+              this.showToast('Please fill in both Amount and Price', 'danger');
+              return false; // Mantiene la alerta abierta si hay error
+            }
+
+            try {
+              await this.portfolioService.saveAsset(
+                this.coin.id, 
+                parseFloat(data.amount),
+                parseFloat(data.buyPrice)
+              );
+              
+              // Actualizamos vista
+              this.currentAsset = { 
+                id: this.coin.id,
+                amount: parseFloat(data.amount),
+                buyPrice: parseFloat(data.buyPrice)
+              };
+
+              this.showToast('Asset saved successfully!', 'success');
+              return true;
+
+            } catch (error) {
+              console.error(error);
+              this.showToast('Error saving asset. Try again.', 'danger');
+              return false;
             }
           }
         }
       ],
-      cssClass: 'cyber-alert' // Usaremos estilos globales si quieres personalizarlos
+      cssClass: 'cyber-alert'
     });
     await alert.present();
   }
@@ -197,18 +204,19 @@ export class CoinDetailPage implements OnInit {
   async presentEditOrDeleteAlert() {
     const alert = await this.alertController.create({
       header: 'Manage Asset',
-      message: `You hold ${this.currentAmount} ${this.coin.symbol.toUpperCase()}`,
+      message: `You hold ${this.currentAsset?.amount} ${this.coin.symbol.toUpperCase()}`,
       buttons: [
         {
-          text: 'Update Amount',
-          handler: () => this.presentAddAlert() // Reusamos la de añadir
+          text: 'Edit Position',
+          handler: () => this.presentAddAlert()
         },
         {
-          text: 'Remove Asset',
+          text: 'Sell / Remove',
           role: 'destructive',
           handler: async () => {
             await this.portfolioService.removeAsset(this.coin.id);
-            this.currentAmount = null;
+            this.currentAsset = null;
+            this.showToast('Asset removed', 'warning');
           }
         },
         { text: 'Cancel', role: 'cancel' }
@@ -216,5 +224,16 @@ export class CoinDetailPage implements OnInit {
       cssClass: 'cyber-alert'
     });
     await alert.present();
+  }
+
+  // Helper para mostrar mensajes
+  async showToast(msg: string, color: string) {
+    const toast = await this.toastController.create({
+      message: msg,
+      duration: 2000,
+      color: color,
+      position: 'top'
+    });
+    toast.present();
   }
 }
