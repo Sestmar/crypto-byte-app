@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
        <ion-button><ion-icon name="wallet-outline"></ion-icon></ion-button>
     </ion-buttons>
-    <ion-title>ASSETS OVERVIEW</ion-title>
+    <ion-title>RESUMEN DE ACTIVOS</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="openSettings()">
         <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
@@ -21,7 +21,7 @@
   <div class="dashboard-card">
     
     <div class="balance-header">
-      <span class="label">Total Balance (Est.)</span>
+      <span class="label">Balance Total (Est.)</span>
       <ion-icon [name]="hideBalance ? 'eye-off-outline' : 'eye-outline'" (click)="toggleVisibility()"></ion-icon>
     </div>
 
@@ -37,41 +37,45 @@
     <div class="pnl-badge" [class.profit]="totalPnL >= 0" [class.loss]="totalPnL < 0" *ngIf="!hideBalance">
       <span class="pnl-val">{{ totalPnL >= 0 ? '+' : '' }}{{ totalPnL | currency:'USD':'symbol':'1.2-2' }}</span>
       <span class="pnl-pct">({{ totalPnLPercent | number:'1.2-2' }}%)</span>
-      <span class="time-label">All Time</span>
+      <span class="time-label">Histórico</span>
     </div>
 
     <div class="action-grid">
-      <div class="action-btn">
+      
+      <div class="action-btn" (click)="deposit()">
         <div class="icon-circle filled"><ion-icon name="arrow-down-circle-outline"></ion-icon></div>
-        <span>Deposit</span>
+        <span>Depositar</span>
       </div>
-      <div class="action-btn">
+      
+      <div class="action-btn" (click)="withdraw()">
         <div class="icon-circle"><ion-icon name="arrow-up-circle-outline"></ion-icon></div>
-        <span>Withdraw</span>
+        <span>Retirar</span>
       </div>
-      <div class="action-btn">
+      
+      <div class="action-btn" (click)="transfer()">
         <div class="icon-circle"><ion-icon name="swap-horizontal-outline"></ion-icon></div>
-        <span>Transfer</span>
+        <span>Transferir</span>
       </div>
+
     </div>
   </div>
 
   <div class="ion-text-center ion-padding" *ngIf="loading">
     <ion-spinner color="secondary"></ion-spinner>
-    <p style="color: #666; margin-top: 10px;">Syncing Assets...</p>
+    <p style="color: #666; margin-top: 10px;">Sincronizando Acrivos...</p>
   </div>
 
   <div *ngIf="!loading && myCoins.length === 0" class="empty-state">
     <ion-icon name="wallet-outline" size="large" color="medium"></ion-icon>
-    <p>No assets holding yet.</p>
+    <p>Aún no tienes activos.</p>
     <ion-button routerLink="/tabs/market" fill="outline" color="secondary">
-      Go to Market
+      Ir al Mercado
     </ion-button>
   </div>
 
   <ion-list lines="none" class="asset-list" *ngIf="myCoins.length > 0">
     <ion-list-header>
-      <ion-label>Crypto Assets</ion-label>
+      <ion-label>Cryptoactivos</ion-label>
     </ion-list-header>
 
     <ion-item-sliding *ngFor="let coin of myCoins" class="coin-item-sliding">
@@ -92,7 +96,7 @@
               {{ coin.pnl >= 0 ? '+' : '' }}{{ coin.pnlPercent | number:'1.2-2' }}%
             </p>
             <p style="color: #666" *ngIf="!coin.buyPrice || coin.buyPrice === 0">
-              Set Buy Price
+              Sin Precio Compra
             </p>
           </div>
         </ion-label>

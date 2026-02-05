@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/tabs/portfolio" color="secondary" text=""></ion-back-button>
     </ion-buttons>
-    <ion-title>SYSTEM CONFIG</ion-title>
+    <ion-title>CONFIGURACIÓN</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -22,16 +22,16 @@
         <div class="status-indicator"></div>
       </div>
 
-      <h2 class="user-name">{{ user.displayName || 'Unknown User' }}</h2>
+      <h2 class="user-name">{{ user.displayName || 'Usuario Desconocido' }}</h2>
       <p class="user-email">{{ user.email }}</p>
 
       <div class="stats-row">
         <div class="stat">
-          <span class="label">STATUS</span>
+          <span class="label">ESTADO</span>
           <span class="value online">ONLINE</span>
         </div>
         <div class="stat">
-          <span class="label">LEVEL</span>
+          <span class="label">NIVEL</span>
           <span class="value">PRO</span>
         </div>
       </div>
@@ -46,14 +46,14 @@
       <ion-item lines="none" detail="false" class="cyber-item">
         <ion-icon slot="start" name="shield-checkmark-outline" color="secondary"></ion-icon>
         <ion-label>
-          <h2>Security Check</h2>
-          <p>System integrity verified</p>
+          <h2>Seguridad</h2>
+          <p>Integridad del sistema verificada</p>
         </ion-label>
       </ion-item>
       
       <ion-button (click)="logout()" expand="block" color="danger" class="logout-btn">
         <ion-icon slot="start" name="log-out-outline"></ion-icon>
-        DISCONNECT SYSTEM
+        CERRAR SESIÓN
       </ion-button>
     </ion-list>
 

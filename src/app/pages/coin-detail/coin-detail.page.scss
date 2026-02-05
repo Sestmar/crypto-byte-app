@@ -156,3 +156,61 @@
   font-size: 2.5rem;
   margin: 10px 0;
 }
+
+/* BARRA DE TEMPORALIDAD */
+.chart-controls {
+  padding: 0 10px;
+  margin-bottom: 10px;
+  
+  ion-segment {
+    background: transparent;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    ion-segment-button {
+      --color: #888;
+      --color-checked: var(--neon-cyan);
+      --indicator-color: rgba(0, 243, 255, 0.1);
+      font-family: 'Orbitron';
+      font-size: 0.8rem;
+      min-height: 36px;
+      
+      &::part(indicator-background) {
+        border-bottom: 2px solid var(--neon-cyan);
+      }
+    }
+  }
+}
+
+/* Ajuste del contenedor de la gráfica */
+.chart-container {
+  height: 300px; /* Un poco más alto para ver detalles */
+  margin-bottom: 20px;
+}
+
+.chart-container {
+  height: 320px;
+  margin-bottom: 20px;
+  /* Fondo técnico sutil para la zona de gráfica */
+  background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0) 100%);
+  border-radius: 12px;
+  padding: 10px 0;
+  position: relative;
+}
+
+/* Efecto de "Precio Actual" parpadeante (Opcional, toque pro) */
+.live-indicator {
+  width: 8px; height: 8px;
+  background-color: var(--neon-green);
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+  box-shadow: 0 0 8px var(--neon-green);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}

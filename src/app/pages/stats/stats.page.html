@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      <span class="glitch" data-text="GLOBAL METRICS">GLOBAL METRICS</span>
+      <span class="glitch" data-text="METRICAS GLOBALES">METRICAS GLOBALES</span>
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -15,14 +15,14 @@
   <div *ngIf="globalData">
     <ion-card class="neon-card">
       <ion-card-header>
-        <ion-card-subtitle style="color: var(--neon-pink)">ACTIVE COINS</ion-card-subtitle>
-        <ion-card-title style="font-size: 2rem; color: white;">{{ globalData.active_cryptocurrencies }}</ion-card-title>
+        <ion-card-subtitle style="color: var(--neon-pink)">CRIPTOS ACTIVAS</ion-card-subtitle>
+        <ion-card-title style="font-size: 2rem; color: white;">{{ globalData.active_cryptocurrencies | number }}</ion-card-title>
       </ion-card-header>
     </ion-card>
 
     <ion-card>
       <ion-card-header>
-        <ion-card-subtitle style="color: var(--neon-cyan)">MARKET DOMINANCE</ion-card-subtitle>
+        <ion-card-subtitle style="color: var(--neon-cyan)">DOMINIO DE MERCADO</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
         <p style="color:white; margin-bottom: 5px;">Bitcoin ({{ globalData.market_cap_percentage.btc | number:'1.1-1' }}%)</p>

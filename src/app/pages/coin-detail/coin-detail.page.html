@@ -5,7 +5,7 @@
     </ion-buttons>
     <ion-title>
       <span class="glitch" [attr.data-text]="coin?.symbol | uppercase">
-        {{ coin?.name || 'LOADING...' }}
+        {{ coin?.name || 'CARGANDO...' }}
       </span>
     </ion-title>
   </ion-toolbar>
@@ -19,7 +19,7 @@
 
   <div class="ion-text-center ion-padding" *ngIf="loading" style="margin-top: 50px;">
     <ion-spinner color="secondary"></ion-spinner>
-    <p style="color: #666; margin-top: 10px;">Establishing connection...</p>
+    <p style="color: #666; margin-top: 10px;">Estableciendo conexión...</p>
   </div>
 
   <div *ngIf="!loading && coin" class="detail-container">
@@ -42,20 +42,20 @@
     <div class="position-card fade-in" *ngIf="currentAsset">
       <div class="pos-header">
         <ion-icon name="wallet-outline"></ion-icon>
-        <span>YOUR POSITION</span>
+        <span>TU POSICIÓN</span>
       </div>
       
       <div class="pos-grid">
         <div class="pos-item">
-          <span class="label">Holdings</span>
+          <span class="label">Tenencia</span>
           <span class="value">{{ currentAsset.amount }} {{ coin.symbol | uppercase }}</span>
         </div>
         <div class="pos-item right">
-          <span class="label">Total Value</span>
+          <span class="label">Valor Total</span>
           <span class="value white">{{ myPosition.totalValue | currency:'USD':'symbol':'1.2-2' }}</span>
         </div>
         <div class="pos-item">
-          <span class="label">Avg. Buy Price</span>
+          <span class="label">Precio Compra Prom.</span>
           <span class="value">{{ currentAsset.buyPrice | currency:'USD':'symbol':(currentAsset.buyPrice! < 1 ? '1.2-8' : '1.2-2') }}</span>
         </div>
         <div class="pos-item right">
@@ -68,6 +68,23 @@
       </div>
     </div>
 
+    <div class="chart-controls">
+      <ion-segment [value]="selectedTimeframe" (ionChange)="changeTimeframe($event)" mode="ios">
+        <ion-segment-button value="1">
+          <ion-label>24H</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="7">
+          <ion-label>7D</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="30">
+          <ion-label>1M</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="90">
+          <ion-label>3M</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
     <div class="chart-container">
       <canvas #lineCanvas></canvas>
     </div>
@@ -76,25 +93,25 @@
       <ion-row>
         <ion-col size="6">
           <div class="stat-box">
-            <div class="stat-label">MARKET CAP</div>
+            <div class="stat-label">CAP. MERCADO</div>
             <div class="stat-value">{{ coin.market_data.market_cap.usd | currency:'USD':'symbol':'1.0-0' }}</div>
           </div>
         </ion-col>
         <ion-col size="6">
           <div class="stat-box">
-            <div class="stat-label">VOLUME (24H)</div>
+            <div class="stat-label">VOLUMEN (24H)</div>
             <div class="stat-value">{{ coin.market_data.total_volume.usd | currency:'USD':'symbol':'1.0-0' }}</div>
           </div>
         </ion-col>
         <ion-col size="6">
           <div class="stat-box">
-            <div class="stat-label">HIGH (24H)</div>
+            <div class="stat-label">MÁXIMO (24H)</div>
             <div class="stat-value text-green">{{ coin.market_data.high_24h.usd | currency:'USD' }}</div>
           </div>
         </ion-col>
         <ion-col size="6">
           <div class="stat-box">
-            <div class="stat-label">LOW (24H)</div>
+            <div class="stat-label">MÍNIMO (24H)</div>
             <div class="stat-value text-red">{{ coin.market_data.low_24h.usd | currency:'USD' }}</div>
           </div>
         </ion-col>
@@ -102,9 +119,9 @@
     </ion-grid>
 
     <div class="about-section">
-      <h3 style="color: var(--neon-cyan); font-family: 'Orbitron'; margin-bottom: 10px;">ABOUT {{ coin.symbol | uppercase }}</h3>
+      <h3 style="color: var(--neon-cyan); font-family: 'Orbitron'; margin-bottom: 10px;">SOBRE {{ coin.symbol | uppercase }}</h3>
       <div class="about-text" 
-           [innerHTML]="coin.description?.en ? coin.description.en : 'No description available for this asset.'">
+           [innerHTML]="coin.description?.en ? coin.description.en : 'Descripción no disponible.'">
       </div>
     </div>
     

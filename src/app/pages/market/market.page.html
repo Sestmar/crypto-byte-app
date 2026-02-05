@@ -1,23 +1,29 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>MERCADO CRIPTO</ion-title>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content [fullscreen]="true">
   <div class="cyber-bg">
     <div class="stars"></div>
     <div class="stars2"></div>
   </div>
 
-  <div style="padding: 10px 16px; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid rgba(255,255,255,0.05); margin-top: 60px;">
+  <div style="padding: 10px 16px; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid rgba(255,255,255,0.05); margin-top: 10px;">
     
     <ion-chip [outline]="activeFilter !== 'rank'" [color]="activeFilter === 'rank' ? 'secondary' : 'medium'" (click)="sort('rank')">
-      <ion-label>Top Rank</ion-label>
+      <ion-label>Ranking</ion-label>
     </ion-chip>
 
     <ion-chip [outline]="activeFilter !== 'gainers'" [color]="activeFilter === 'gainers' ? 'success' : 'medium'" (click)="sort('gainers')">
       <ion-icon name="arrow-up"></ion-icon>
-      <ion-label>Gainers</ion-label>
+      <ion-label>Ganadores</ion-label>
     </ion-chip>
 
     <ion-chip [outline]="activeFilter !== 'losers'" [color]="activeFilter === 'losers' ? 'danger' : 'medium'" (click)="sort('losers')">
       <ion-icon name="arrow-down"></ion-icon>
-      <ion-label>Losers</ion-label>
+      <ion-label>Perdedores</ion-label>
     </ion-chip>
 
     <ion-chip [outline]="activeFilter !== 'name'" [color]="activeFilter === 'name' ? 'tertiary' : 'medium'" (click)="sort('name')">
@@ -27,7 +33,10 @@
   </div>
 
   <ion-list *ngIf="loading" style="background: transparent;">
-    </ion-list>
+    <div class="ion-text-center ion-padding">
+      <ion-spinner color="secondary"></ion-spinner>
+    </div>
+  </ion-list>
 
   <ion-list *ngIf="!loading" style="background: transparent;">
       <ion-card *ngFor="let coin of coins" class="coin-card" (click)="openDetail(coin.id)">
