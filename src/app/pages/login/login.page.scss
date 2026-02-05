@@ -1,0 +1,169 @@
+/* Forzamos que el componente sea transparente para ver el fondo global */
+ion-content {
+  --background: transparent;
+}
+
+.login-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  /* IMPORTANTE: Sin background aquí */
+  background: transparent; 
+  position: relative;
+  z-index: 10;
+}
+
+/* --- PANEL HOLOGRÁFICO FUTURISTA (HUD) --- */
+.glass-panel {
+  position: relative;
+  width: 100%;
+  max-width: 400px; /* Un poco más ancho para la nueva forma */
+  padding: 50px 30px; /* Más espacio vertical */
+  text-align: center;
+  
+  /* FONDO: Degradado sutil vertical + transparencia */
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 243, 255, 0.05) 0%,
+    rgba(10, 15, 30, 0.4) 50%,
+    rgba(0, 243, 255, 0.05) 100%
+  );
+  
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  /* --- LA CLAVE: NUEVA FORMA NO CUADRADA --- */
+  /* Cortamos las esquinas de forma asimétrica */
+  clip-path: polygon(
+    20px 0,       /* Top-left start */
+    calc(100% - 20px) 0, /* Top-right start */
+    100% 30px,    /* Top-right angle down */
+    100% calc(100% - 30px), /* Bottom-right angle start */
+    calc(100% - 20px) 100%, /* Bottom-right end */
+    20px 100%,    /* Bottom-left end */
+    0 calc(100% - 30px), /* Bottom-left angle up */
+    0 30px        /* Top-left angle end */
+  );
+
+  /* --- BORDES DE ENERGÍA SUPERIOR E INFERIOR --- */
+  /* Usamos sombras internas para simular bordes brillantes arriba y abajo */
+  box-shadow: 
+    inset 0 2px 0 0 var(--neon-cyan), /* Línea superior brillante */
+    inset 0 -2px 0 0 var(--neon-cyan), /* Línea inferior brillante */
+    inset 0 0 30px rgba(0, 243, 255, 0.1); /* Resplandor interno general */
+
+  /* Eliminamos border y border-radius estándar porque usamos clip-path */
+  border: none;
+  border-radius: 0;
+
+  /* --- ELEMENTOS DECORATIVOS EN LAS ESQUINAS --- */
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border: 2px solid var(--neon-cyan);
+    opacity: 0.6;
+  }
+
+  /* Esquina superior izquierda tech */
+  &::before {
+    top: 0;
+    left: 0;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  /* Esquina inferior derecha tech */
+  &::after {
+    bottom: 0;
+    right: 0;
+    border-left: none;
+    border-top: none;
+  }
+}
+
+/* Títulos */
+.subtitle {
+  color: var(--neon-cyan);
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 4px;
+  font-size: 0.8rem;
+  margin-bottom: 40px;
+  opacity: 0.8;
+  font-weight: 600;
+}
+
+/* Botón Google (Estilo sólido para destacar) */
+.cyber-btn-google {
+  --background: rgba(255, 255, 255, 0.95);
+  --color: #000;
+  --border-radius: 4px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  height: 50px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+  
+  ion-icon { font-size: 1.4rem; margin-right: 8px; }
+}
+
+/* Separador */
+.divider {
+  display: flex;
+  align-items: center;
+  color: rgba(0, 243, 255, 0.5);
+  margin: 20px 0;
+  font-family: 'Rajdhani';
+  font-size: 0.8rem;
+  
+  &::before, &::after {
+    content: ''; flex: 1; height: 1px;
+    background: rgba(0, 243, 255, 0.2);
+  }
+  span { padding: 0 10px; }
+}
+
+/* Botón Email (Outline) */
+.cyber-btn-email {
+  --border-color: var(--neon-cyan);
+  --color: var(--neon-cyan);
+  --border-radius: 4px;
+  font-family: 'Orbitron';
+  height: 50px;
+  --border-width: 1px;
+  letter-spacing: 1px;
+  
+  &:hover {
+    --background: rgba(0, 243, 255, 0.1);
+  }
+}
+
+.footer-version {
+  position: absolute;
+  bottom: 20px;
+  color: rgba(255, 255, 255, 0.3);
+  font-family: 'Rajdhani';
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+}
+
+.loading-status {
+  margin-top: 20px;
+  p {
+    color: var(--neon-cyan);
+    font-family: 'Orbitron';
+    font-size: 0.7rem;
+    animation: blink 1s infinite;
+  }
+}
+@keyframes blink { 50% { opacity: 0.5; } }

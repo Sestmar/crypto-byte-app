@@ -43,20 +43,19 @@ export class CoinDetailPage implements OnInit {
     Chart.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale, Filler, Tooltip);
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.isFavorite = this.portfolioService.isSaved(id);
+      // 1. Verificar si es favorito en Firebase (Async)
+      this.isFavorite = await this.portfolioService.isFavorite(id);
       
       this.cryptoService.getCoinDetail(id).subscribe({
         next: (data) => {
           this.coin = data;
           this.loading = false;
           
-          // Forzamos la actualización de la vista para que exista el <canvas>
           this.cdr.detectChanges();
           
-          // Intentamos cargar la gráfica
           this.loadChart(id, data.market_data.current_price.usd);
         },
         error: () => this.loading = false
@@ -64,45 +63,37 @@ export class CoinDetailPage implements OnInit {
     }
   }
 
+  // --- LÓGICA DE CHART (Igual que antes) ---
   loadChart(id: string, currentPrice: number) {
     this.cryptoService.getMarketChart(id).subscribe({
       next: (data) => {
-        // SI LA API RESPONDE BIEN: Usamos datos reales
         const prices = data.prices; 
         const labels = prices.map((price: any) => new Date(price[0]).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }));
         const values = prices.map((price: any) => price[1]);
         this.createChart(labels, values);
       },
       error: (err) => {
-        // SI LA API FALLA (Error 429): Usamos datos simulados para que quede bonito
         console.warn("API Límite alcanzado, generando gráfica simulada.");
         this.generateFakeChart(currentPrice);
       }
     });
   }
 
-  // Genera una gráfica bonita basada en el precio actual si la API falla
   generateFakeChart(basePrice: number) {
     const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const values = [];
-    
-    // Generar 7 puntos aleatorios cercanos al precio real
     for (let i = 0; i < 7; i++) {
-      const volatility = basePrice * 0.05; // 5% de variación
+      const volatility = basePrice * 0.05; 
       const randomChange = (Math.random() - 0.5) * volatility;
       values.push(basePrice + randomChange);
     }
-    // El último punto es el precio actual exacto
     values[6] = basePrice;
-
     this.createChart(labels, values);
   }
 
   createChart(labels: any[], data: any[]) {
     if (this.lineCanvas) {
       const ctx = this.lineCanvas.nativeElement.getContext('2d');
-      
-      // Degradado CIAN Neón
       const gradient = ctx.createLinearGradient(0, 0, 0, 300);
       gradient.addColorStop(0, 'rgba(0, 243, 255, 0.5)'); 
       gradient.addColorStop(1, 'rgba(0, 243, 255, 0)');   
@@ -116,7 +107,7 @@ export class CoinDetailPage implements OnInit {
           datasets: [{
             label: 'Price',
             data: data,
-            borderColor: '#00f3ff', // Color CIAN
+            borderColor: '#00f3ff', 
             backgroundColor: gradient,
             borderWidth: 2,
             pointRadius: 0, 
@@ -145,7 +136,7 @@ export class CoinDetailPage implements OnInit {
           },
           scales: {
             x: { display: false }, 
-            y: { display: false } // Ocultamos ejes para que quede más limpio y "flotante"
+            y: { display: false } 
           },
           animation: { duration: 1500, easing: 'easeOutQuart' }
         }
@@ -153,9 +144,20 @@ export class CoinDetailPage implements OnInit {
     }
   }
 
-  toggleFavorite() {
-    if (this.coin) {
-      this.isFavorite = this.portfolioService.toggleCoin(this.coin);
+  // --- LÓGICA DE FAVORITOS ACTUALIZADA ---
+  async toggleFavorite() {
+    if (!this.coin) return;
+
+    const coinId = this.coin.id;
+
+    if (this.isFavorite) {
+      // Si ya es favorito, lo quitamos de Firebase
+      await this.portfolioService.removeCoin(coinId);
+      this.isFavorite = false;
+    } else {
+      // Si no lo es, lo añadimos
+      await this.portfolioService.addCoin(coinId);
+      this.isFavorite = true;
     }
   }
 }

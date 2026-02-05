@@ -3,6 +3,9 @@
  * ----------------------------------------------------------------------------
  */
 
+@use "sass:math";
+@use "sass:string"; 
+
 /* 1. FUENTES FUTURISTAS */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&display=swap');
@@ -51,14 +54,19 @@ body {
 }
 
 /* --- 2. FONDO DE PARTÍCULAS (ESTRELLAS) --- */
-/* Función SCSS para generar estrellas aleatorias */
+
+/* CORRECCIÓN: El nombre de la función debe ser 'box-shadow-stars' */
 @function box-shadow-stars($n) {
-  $value: '#{random(2000)}px #{random(2000)}px #FFF';
+  $value: '#{math.random(2000)}px #{math.random(2000)}px #FFF';
   @for $i from 2 through $n {
-    $value: '#{$value} , #{random(2000)}px #{random(2000)}px #FFF';
+    $value: '#{$value} , #{math.random(2000)}px #{math.random(2000)}px #FFF';
   }
-  @return unquote($value);
+  @return string.unquote($value);
 }
+
+/* Ahora sí funcionará porque los nombres coinciden */
+$shadows-small:  box-shadow-stars(700);
+$shadows-medium: box-shadow-stars(200);
 
 /* Generamos las sombras estáticas (el navegador las anima ligeras) */
 $shadows-small:  box-shadow-stars(700);

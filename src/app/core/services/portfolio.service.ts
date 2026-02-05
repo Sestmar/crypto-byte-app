@@ -1,46 +1,86 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { Firestore, doc, setDoc, getDoc, updateDoc, arrayUnion, arrayRemove } from '@angular/fire/firestore';
+import { Auth, authState } from '@angular/fire/auth'; // <--- IMPORTANTE: authState
+import { Observable, from, of } from 'rxjs';
+import { switchMap, map, catchError, take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PortfolioService {
-  private STORAGE_KEY = 'crypto_portfolio_v1';
+  private firestore = inject(Firestore);
+  private auth = inject(Auth);
 
-  constructor() { }
-
-  // Obtener todas las monedas guardadas
-  getPortfolio(): any[] {
-    const data = localStorage.getItem(this.STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+  // Helper para obtener la referencia al documento (solo si ya tenemos usuario síncrono)
+  private getUserDocRef(uid: string) {
+    return doc(this.firestore, `users/${uid}`);
   }
 
-  // Verificar si una moneda ya está guardada
-  isSaved(id: string): boolean {
-    const portfolio = this.getPortfolio();
-    return portfolio.some((coin: any) => coin.id === id);
+  // 1. OBTENER FAVORITOS (CORREGIDO PARA F5)
+  getFavorites(): Observable<string[]> {
+    // Usamos authState para ESPERAR a que Firebase restaure la sesión
+    return authState(this.auth).pipe(
+      take(1), // Tomamos solo el primer estado (logueado o no)
+      switchMap(user => {
+        if (!user) {
+          // Si tras esperar, no hay usuario, devolvemos vacío
+          return of([]);
+        }
+
+        // Si hay usuario, vamos a Firestore
+        const userDoc = this.getUserDocRef(user.uid);
+        return from(getDoc(userDoc)).pipe(
+          map(snapshot => {
+            if (snapshot.exists()) {
+              return snapshot.data()['favorites'] || [];
+            } else {
+              return [];
+            }
+          }),
+          catchError(err => {
+            console.error('Error leyendo favoritos:', err);
+            return of([]);
+          })
+        );
+      })
+    );
   }
 
-  // Guardar o Eliminar (Toggle)
-  toggleCoin(coin: any): boolean {
-    let portfolio = this.getPortfolio();
-    const exists = portfolio.find((c: any) => c.id === coin.id);
+  // 2. AÑADIR A FAVORITOS
+  async addCoin(coinId: string) {
+    const user = this.auth.currentUser;
+    if (!user) return; // Aquí podemos usar currentUser porque la acción es manual
 
-    if (exists) {
-      // Si existe, la borramos
-      portfolio = portfolio.filter((c: any) => c.id !== coin.id);
-    } else {
-      // Si no existe, guardamos solo los datos necesarios (para no llenar la memoria)
-      const simpleCoin = {
-        id: coin.id,
-        name: coin.name,
-        symbol: coin.symbol,
-        image: coin.image.large || coin.image, // A veces viene como objeto o string
-        current_price: coin.market_data?.current_price?.usd || coin.current_price
-      };
-      portfolio.push(simpleCoin);
+    const userDoc = this.getUserDocRef(user.uid);
+    await setDoc(userDoc, { 
+      favorites: arrayUnion(coinId),
+      email: user.email 
+    }, { merge: true });
+  }
+
+  // 3. QUITAR DE FAVORITOS
+  async removeCoin(coinId: string) {
+    const user = this.auth.currentUser;
+    if (!user) return;
+
+    const userDoc = this.getUserDocRef(user.uid);
+    await updateDoc(userDoc, {
+      favorites: arrayRemove(coinId)
+    });
+  }
+
+  // 4. VERIFICAR SI ES FAVORITO
+  async isFavorite(coinId: string): Promise<boolean> {
+    const user = this.auth.currentUser;
+    if (!user) return false;
+
+    const userDoc = this.getUserDocRef(user.uid);
+    const snapshot = await getDoc(userDoc);
+    
+    if (snapshot.exists()) {
+      const favs = snapshot.data()['favorites'] || [];
+      return favs.includes(coinId);
     }
-
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(portfolio));
-    return !exists; // Retorna true si se guardó, false si se borró
+    return false;
   }
 }

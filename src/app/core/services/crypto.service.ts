@@ -56,4 +56,15 @@ export class CryptoService {
     // days=7 para una semana, interval=daily para que no pese mucho
     return this.http.get<any>(`${this.apiUrl}/coins/${id}/market_chart?vs_currency=usd&days=7`);
   }
+
+  // Añade este método dentro de tu clase CryptoService
+getCoinsByIds(ids: string[]): Observable<any[]> {
+  // Convertimos el array de IDs en un string separado por comas: "bitcoin,ethereum,solana"
+  const idsString = ids.join(',');
+  
+  // Pedimos SOLO esas monedas específicas
+  return this.http.get<any[]>(
+    `${this.apiUrl}/coins/markets?vs_currency=usd&ids=${idsString}&order=market_cap_desc&sparkline=false&price_change_percentage=24h`
+  );
+}
 }

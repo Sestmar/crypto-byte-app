@@ -1,11 +1,9 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/wallet" color="secondary"></ion-back-button>
+      <ion-back-button defaultHref="/tabs/portfolio" color="secondary" text=""></ion-back-button>
     </ion-buttons>
-    <ion-title>
-      <span class="glitch" data-text="SYSTEM CONFIG">SYSTEM CONFIG</span>
-    </ion-title>
+    <ion-title>SYSTEM CONFIG</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -15,31 +13,51 @@
     <div class="stars2"></div>
   </div>
 
-  <div style="display: flex; flex-direction: column; height: 100%; justify-content: center; align-items: center; padding: 20px;">
+  <div class="settings-container">
     
-    <ion-card style="width: 100%; backdrop-filter: blur(10px); background: rgba(15, 15, 25, 0.8); border: 1px solid var(--neon-cyan);">
-      <ion-card-header>
-        <div style="text-align: center; margin-bottom: 10px;">
-          <ion-icon name="code-slash" style="font-size: 3rem; color: var(--neon-pink);"></ion-icon>
+    <div class="profile-card" *ngIf="user$ | async as user">
+      
+      <div class="avatar-container">
+        <img [src]="user.photoURL || 'assets/shapes.svg'" alt="Profile" class="profile-img">
+        <div class="status-indicator"></div>
+      </div>
+
+      <h2 class="user-name">{{ user.displayName || 'Unknown User' }}</h2>
+      <p class="user-email">{{ user.email }}</p>
+
+      <div class="stats-row">
+        <div class="stat">
+          <span class="label">STATUS</span>
+          <span class="value online">ONLINE</span>
         </div>
-        <ion-card-title style="text-align: center; color: white; font-family: 'Orbitron';">CRYPTOBYTE</ion-card-title>
-        <ion-card-subtitle style="text-align: center; color: var(--neon-cyan);">v1.0.4 [STABLE]</ion-card-subtitle>
-      </ion-card-header>
+        <div class="stat">
+          <span class="label">LEVEL</span>
+          <span class="value">PRO</span>
+        </div>
+      </div>
 
-      <ion-card-content style="text-align: center; font-size: 1.1rem; color: #ccc;">
-        <p>Advanced Crypto Tracker developed for DAM Project.</p>
-        <br>
-        <p style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-          Developed by: <br>
-          <strong style="color: white; font-size: 1.3rem;">Sergio Estudillo</strong>
-        </p>
-      </ion-card-content>
-    </ion-card>
+      <div class="uid-box">
+        ID: {{ user.uid | slice:0:8 }}...
+      </div>
 
-    <ion-button expand="block" fill="outline" color="secondary" style="margin-top: 30px; width: 100%; height: 50px;">
-      <ion-icon slot="start" name="bug"></ion-icon>
-      REPORT SYSTEM BUG
-    </ion-button>
+    </div>
+
+    <ion-list class="cyber-list">
+      <ion-item lines="none" detail="false" class="cyber-item">
+        <ion-icon slot="start" name="shield-checkmark-outline" color="secondary"></ion-icon>
+        <ion-label>
+          <h2>Security Check</h2>
+          <p>System integrity verified</p>
+        </ion-label>
+      </ion-item>
+      
+      <ion-button (click)="logout()" expand="block" color="danger" class="logout-btn">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        DISCONNECT SYSTEM
+      </ion-button>
+    </ion-list>
+
+    <div class="version-info">CryptoByte v2.1.0</div>
 
   </div>
 </ion-content>
