@@ -7,11 +7,12 @@ import {
   IonContent, IonButton, IonIcon, IonText, IonSpinner 
 } from '@ionic/angular/standalone';
 
-// AÑADIDO: signInAnonymously
+// Auth Imports
 import { Auth, GoogleAuthProvider, signInWithCredential, signInWithPopup, signInAnonymously } from '@angular/fire/auth';
 import { addIcons } from 'ionicons';
-// AÑADIDO: eyeOffOutline para el modo incógnito
-import { shieldCheckmarkOutline, logoGoogle, eyeOffOutline } from 'ionicons/icons';
+
+// IMPORTANTE: Aquí cambiamos eyeOffOutline por rocketOutline para que coincida con el HTML
+import { shieldCheckmarkOutline, logoGoogle, rocketOutline } from 'ionicons/icons';
 
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
@@ -29,7 +30,8 @@ export class LoginPage implements OnInit {
   loading = false;
 
   constructor() {
-    addIcons({ shieldCheckmarkOutline, logoGoogle, eyeOffOutline });
+    // Registramos el cohete
+    addIcons({ shieldCheckmarkOutline, logoGoogle, rocketOutline });
   }
 
   ngOnInit() {
@@ -43,7 +45,7 @@ export class LoginPage implements OnInit {
     }
   }
 
-  // --- LOGIN GOOGLE (CORREGIDO) ---
+  // --- LOGIN GOOGLE ---
   async loginGoogle() {
     this.loading = true;
     try {
@@ -66,27 +68,27 @@ export class LoginPage implements OnInit {
     } catch (error: any) {
       console.error('Login Error:', error);
       
-      // FILTRO DE ERRORES: Si el usuario cierra la ventana, NO mostramos alerta
+      // FILTRO DE ERRORES: Si cierra ventana, ignoramos
       const msg = error.message || JSON.stringify(error);
       if (msg.includes('closed-by-user') || msg.includes('cancelled') || msg.includes('12501')) {
-        console.log('Usuario canceló el login');
+        console.log('Login cancelado por el usuario');
       } else {
         alert('Error de conexión: ' + msg);
       }
 
     } finally {
-      this.loading = false; // Importante: Siempre quitamos el spinner
+      this.loading = false;
     }
   }
 
-  // --- LOGIN INVITADO (NUEVO) ---
+  // --- MODO DEMO (INVITADO) ---
   async loginGuest() {
     this.loading = true;
     try {
       await signInAnonymously(this.auth);
       this.router.navigate(['/tabs/market']);
     } catch (error: any) {
-      alert('Error en modo invitado: ' + error.message);
+      alert('Error en modo demo: ' + error.message);
     } finally {
       this.loading = false;
     }

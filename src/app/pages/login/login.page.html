@@ -6,36 +6,37 @@
 
   <div class="login-container">
     
-    <div class="glass-panel">
-      <div class="tech-grid"></div>
+    <div class="glass-panel-stable">
       
       <div class="logo-area">
-        <ion-icon name="shield-checkmark-outline" class="security-icon"></ion-icon>
+        <div class="icon-glow">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+        </div>
         <h1 class="glitch" data-text="CRYPTOBYTE">CRYPTOBYTE</h1>
-        <p class="subtitle">ACCESO SEGURO A LA RED</p>
+        <p class="subtitle">SISTEMA FINANCIERO DESCENTRALIZADO</p>
       </div>
 
       <ion-button (click)="loginGoogle()" class="cyber-btn-google" expand="block">
         <ion-icon slot="start" name="logo-google"></ion-icon>
-        <span class="btn-text">AUTENTICARSE CON GOOGLE</span>
+        <span class="btn-text">ACCEDER CON GOOGLE</span>
       </ion-button>
 
       <div class="divider">
         <span>O</span>
       </div>
 
-      <ion-button (click)="loginGuest()" fill="outline" class="cyber-btn-email" expand="block">
-        <ion-icon slot="start" name="eye-off-outline"></ion-icon>
-        <span class="btn-text">ACCESO ANÓNIMO</span>
+      <ion-button (click)="loginGuest()" fill="outline" class="cyber-btn-demo" expand="block">
+        <ion-icon slot="start" name="rocket-outline"></ion-icon>
+        <span class="btn-text">ENTRAR EN MODO DEMO</span>
       </ion-button>
 
       <div *ngIf="loading" class="loading-status">
         <ion-spinner name="crescent" color="secondary"></ion-spinner>
-        <p>ESTABLECIENDO CONEXIÓN...</p>
+        <p>CONECTANDO...</p>
       </div>
     
     </div>
 
-    <div class="footer-version">v2.0.0 [SISTEMA ONLINE]</div>
+    <div class="footer-version">v2.1.0 [CONEXIÓN SEGURA]</div>
   </div>
 </ion-content>

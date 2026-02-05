@@ -1,4 +1,6 @@
-/* Forzamos que el componente sea transparente para ver el fondo global */
+/* =========================================
+   ESTRUCTURA BASE
+   ========================================= */
 ion-content {
   --background: transparent;
 }
@@ -11,159 +13,163 @@ ion-content {
   justify-content: center;
   align-items: center;
   padding: 20px;
-  /* IMPORTANTE: Sin background aquí */
-  background: transparent; 
   position: relative;
   z-index: 10;
+  /* Un sutil degradado radial para centrar la atención */
+  background: radial-gradient(circle at center, rgba(0, 243, 255, 0.05) 0%, transparent 70%);
 }
 
-/* --- PANEL HOLOGRÁFICO FUTURISTA (HUD) --- */
-.glass-panel {
+/* =========================================
+   PANEL DE CRISTAL "HYPER-GLASS"
+   ========================================= */
+.glass-panel-stable {
   position: relative;
   width: 100%;
-  max-width: 400px; /* Un poco más ancho para la nueva forma */
-  padding: 50px 30px; /* Más espacio vertical */
+  max-width: 380px;
+  padding: 45px 30px;
   text-align: center;
   
-  /* FONDO: Degradado sutil vertical + transparencia */
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 243, 255, 0.05) 0%,
-    rgba(10, 15, 30, 0.4) 50%,
-    rgba(0, 243, 255, 0.05) 100%
-  );
-  
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  /* --- MAGIA DE TRANSPARENCIA --- */
+  /* Fondo azul oscuro muy transparente */
+  background: rgba(5, 10, 25, 0.25);
+  /* Desenfoque potente para efecto cristal premium */
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
 
-  /* --- LA CLAVE: NUEVA FORMA NO CUADRADA --- */
-  /* Cortamos las esquinas de forma asimétrica */
-  clip-path: polygon(
-    20px 0,       /* Top-left start */
-    calc(100% - 20px) 0, /* Top-right start */
-    100% 30px,    /* Top-right angle down */
-    100% calc(100% - 30px), /* Bottom-right angle start */
-    calc(100% - 20px) 100%, /* Bottom-right end */
-    20px 100%,    /* Bottom-left end */
-    0 calc(100% - 30px), /* Bottom-left angle up */
-    0 30px        /* Top-left angle end */
-  );
+  /* Borde sutil físico */
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  border-radius: 16px;
 
-  /* --- BORDES DE ENERGÍA SUPERIOR E INFERIOR --- */
-  /* Usamos sombras internas para simular bordes brillantes arriba y abajo */
+  /* --- ILUMINACIÓN DE NEÓN MULTICAPA --- */
   box-shadow: 
-    inset 0 2px 0 0 var(--neon-cyan), /* Línea superior brillante */
-    inset 0 -2px 0 0 var(--neon-cyan), /* Línea inferior brillante */
-    inset 0 0 30px rgba(0, 243, 255, 0.1); /* Resplandor interno general */
+    /* Luz externa suave */
+    0 10px 40px -10px rgba(0, 243, 255, 0.3),
+    /* Resplandor interno en los bordes */
+    inset 0 0 20px rgba(0, 243, 255, 0.15),
+    /* Pequeño halo blanco en el borde superior para efecto 3D */
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    
+  transition: all 0.3s ease;
 
-  /* Eliminamos border y border-radius estándar porque usamos clip-path */
-  border: none;
-  border-radius: 0;
+  /* Efecto sutil al pasar el ratón por encima del panel entero */
+  &:hover {
+    box-shadow: 
+      0 15px 50px -10px rgba(0, 243, 255, 0.4),
+      inset 0 0 25px rgba(0, 243, 255, 0.2);
+    border-color: rgba(0, 243, 255, 0.4);
+  }
 
-  /* --- ELEMENTOS DECORATIVOS EN LAS ESQUINAS --- */
+  /* --- ACENTOS TECH EN ESQUINAS (Sin romper el layout) --- */
   &::before, &::after {
-    content: '';
-    position: absolute;
-    width: 15px;
-    height: 15px;
-    border: 2px solid var(--neon-cyan);
-    opacity: 0.6;
+    content: ''; position: absolute; width: 25px; height: 25px;
+    border-color: var(--neon-cyan); opacity: 0.8; pointer-events: none;
   }
-
-  /* Esquina superior izquierda tech */
+  /* Esquina Superior Izquierda */
   &::before {
-    top: 0;
-    left: 0;
-    border-right: none;
-    border-bottom: none;
+    top: -1px; left: -1px;
+    border-top: 2px solid; border-left: 2px solid;
+    border-top-left-radius: 16px; filter: drop-shadow(0 0 5px var(--neon-cyan));
   }
-
-  /* Esquina inferior derecha tech */
+  /* Esquina Inferior Derecha */
   &::after {
-    bottom: 0;
-    right: 0;
-    border-left: none;
-    border-top: none;
+    bottom: -1px; right: -1px;
+    border-bottom: 2px solid; border-right: 2px solid;
+    border-bottom-right-radius: 16px; filter: drop-shadow(0 0 5px var(--neon-cyan));
   }
 }
 
-/* Títulos */
-.subtitle {
+/* =========================================
+   TYPOGRAPHY & ICONS
+   ========================================= */
+.logo-area { margin-bottom: 35px; }
+
+.icon-glow ion-icon {
+  font-size: 3.5rem;
   color: var(--neon-cyan);
-  font-family: 'Rajdhani', sans-serif;
-  letter-spacing: 4px;
-  font-size: 0.8rem;
-  margin-bottom: 40px;
-  opacity: 0.8;
-  font-weight: 600;
+  /* Glow más intenso en el icono principal */
+  filter: drop-shadow(0 0 15px var(--neon-cyan));
+  margin-bottom: 15px;
+  animation: pulseIcon 3s infinite ease-in-out;
 }
 
-/* Botón Google (Estilo sólido para destacar) */
+h1.glitch {
+  font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 800;
+  color: white; margin: 0; letter-spacing: 3px;
+  text-shadow: 0 0 15px rgba(0, 243, 255, 0.7); /* Sombra de texto neón */
+}
+
+.subtitle {
+  color: var(--neon-cyan); font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 4px; font-size: 0.8rem; margin-top: 8px;
+  opacity: 0.9; font-weight: 700; text-transform: uppercase;
+}
+
+/* =========================================
+   BOTONES CYBERPUNK
+   ========================================= */
+/* Botón Google - Ahora es "Glass" también */
 .cyber-btn-google {
-  --background: rgba(255, 255, 255, 0.95);
-  --color: #000;
-  --border-radius: 4px;
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 700;
-  height: 50px;
-  margin-bottom: 20px;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-  transition: transform 0.2s;
+  --background: rgba(255, 255, 255, 0.1); /* Blanco translúcido */
+  --color: white;
+  --border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 0.9rem;
+  height: 54px; margin-bottom: 25px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, background 0.3s;
+  overflow: hidden;
 
   &:hover {
-    transform: scale(1.02);
+    transform: translateY(-2px);
+    --background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
   }
-  
-  ion-icon { font-size: 1.4rem; margin-right: 8px; }
+  ion-icon { font-size: 1.3rem; margin-right: 10px; }
 }
 
 /* Separador */
 .divider {
-  display: flex;
-  align-items: center;
-  color: rgba(0, 243, 255, 0.5);
-  margin: 20px 0;
-  font-family: 'Rajdhani';
-  font-size: 0.8rem;
-  
+  display: flex; align-items: center; color: rgba(255, 255, 255, 0.5);
+  margin: 20px 0; font-family: 'Rajdhani'; font-size: 0.8rem; letter-spacing: 1px;
   &::before, &::after {
-    content: ''; flex: 1; height: 1px;
-    background: rgba(0, 243, 255, 0.2);
+    content: ''; flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(0, 243, 255, 0.4), transparent);
   }
-  span { padding: 0 10px; }
+  span { padding: 0 15px; }
 }
 
-/* Botón Email (Outline) */
-.cyber-btn-email {
-  --border-color: var(--neon-cyan);
-  --color: var(--neon-cyan);
-  --border-radius: 4px;
-  font-family: 'Orbitron';
-  height: 50px;
-  --border-width: 1px;
-  letter-spacing: 1px;
+/* Botón Demo */
+.cyber-btn-demo {
+  --border-color: var(--neon-cyan); --color: var(--neon-cyan);
+  --border-radius: 8px; --border-width: 1px;
+  font-family: 'Orbitron'; height: 54px; letter-spacing: 1px; font-size: 0.9rem;
+  background: rgba(0, 243, 255, 0.05);
+  transition: all 0.3s;
   
   &:hover {
-    --background: rgba(0, 243, 255, 0.1);
+    --background: rgba(0, 243, 255, 0.15);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
   }
+  ion-icon { font-size: 1.3rem; margin-right: 10px; }
 }
 
+/* =========================================
+   FOOTER & LOADING
+   ========================================= */
 .footer-version {
-  position: absolute;
-  bottom: 20px;
-  color: rgba(255, 255, 255, 0.3);
-  font-family: 'Rajdhani';
-  font-size: 0.7rem;
-  letter-spacing: 2px;
+  position: absolute; bottom: 25px;
+  color: rgba(0, 243, 255, 0.4); font-family: 'Rajdhani';
+  font-size: 0.75rem; letter-spacing: 3px; font-weight: 600;
 }
 
 .loading-status {
-  margin-top: 20px;
+  margin-top: 25px;
   p {
-    color: var(--neon-cyan);
-    font-family: 'Orbitron';
-    font-size: 0.7rem;
-    animation: blink 1s infinite;
+    color: var(--neon-cyan); font-family: 'Orbitron';
+    font-size: 0.8rem; margin-top: 10px; letter-spacing: 1px;
+    animation: blink 1s infinite alternate;
   }
 }
-@keyframes blink { 50% { opacity: 0.5; } }
+
+/* Animaciones Sutiles */
+@keyframes blink { from { opacity: 0.6; } to { opacity: 1; } }
+@keyframes pulseIcon { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 20px var(--neon-cyan)); } }
