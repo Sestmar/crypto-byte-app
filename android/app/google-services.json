@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "953486025598",
+    "project_id": "cryptobyte-1aad7",
+    "storage_bucket": "cryptobyte-1aad7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:953486025598:android:f93c6f448ff0dd525c492f",
+        "android_client_info": {
+          "package_name": "io.ionic.starter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "953486025598-j4j1otlkse0obv95gcpij2c439fjig7j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAz8ip1Gf16nyAIKV-DKr_N1UW7qJgWnyM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "953486025598-j4j1otlkse0obv95gcpij2c439fjig7j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,4 +4,6 @@
     <string name="title_activity_main">cryptoByte</string>
     <string name="package_name">io.ionic.starter</string>
     <string name="custom_url_scheme">io.ionic.starter</string>
+    
+    <string name="server_client_id">953486025598-j4j1otlkse0obv95gcpij2c439fjig7j.apps.googleusercontent.com</string>
 </resources>
