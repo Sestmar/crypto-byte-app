@@ -18,12 +18,12 @@
 
     <ion-chip [outline]="activeFilter !== 'gainers'" [color]="activeFilter === 'gainers' ? 'success' : 'medium'" (click)="sort('gainers')">
       <ion-icon name="arrow-up"></ion-icon>
-      <ion-label>Ganadores</ion-label>
+      <ion-label>alza</ion-label>
     </ion-chip>
 
     <ion-chip [outline]="activeFilter !== 'losers'" [color]="activeFilter === 'losers' ? 'danger' : 'medium'" (click)="sort('losers')">
       <ion-icon name="arrow-down"></ion-icon>
-      <ion-label>Perdedores</ion-label>
+      <ion-label>Bajada</ion-label>
     </ion-chip>
 
     <ion-chip [outline]="activeFilter !== 'name'" [color]="activeFilter === 'name' ? 'tertiary' : 'medium'" (click)="sort('name')">
