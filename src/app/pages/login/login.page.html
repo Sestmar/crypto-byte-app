@@ -12,30 +12,30 @@
       <div class="logo-area">
         <ion-icon name="shield-checkmark-outline" class="security-icon"></ion-icon>
         <h1 class="glitch" data-text="CRYPTOBYTE">CRYPTOBYTE</h1>
-        <p class="subtitle">SECURE NET ACCESS</p>
+        <p class="subtitle">ACCESO SEGURO A LA RED</p>
       </div>
 
       <ion-button (click)="loginGoogle()" class="cyber-btn-google" expand="block">
         <ion-icon slot="start" name="logo-google"></ion-icon>
-        <span class="btn-text">AUTHENTICATE WITH GOOGLE</span>
+        <span class="btn-text">AUTENTICARSE CON GOOGLE</span>
       </ion-button>
 
       <div class="divider">
-        <span>OR</span>
+        <span>O</span>
       </div>
 
-      <ion-button fill="outline" class="cyber-btn-email" expand="block">
-        <ion-icon slot="start" name="mail-outline"></ion-icon>
-        <span class="btn-text">ACCESS WITH EMAIL</span>
+      <ion-button (click)="loginGuest()" fill="outline" class="cyber-btn-email" expand="block">
+        <ion-icon slot="start" name="eye-off-outline"></ion-icon>
+        <span class="btn-text">ACCESO ANÓNIMO</span>
       </ion-button>
 
       <div *ngIf="loading" class="loading-status">
         <ion-spinner name="crescent" color="secondary"></ion-spinner>
-        <p>CONNECTING...</p>
+        <p>ESTABLECIENDO CONEXIÓN...</p>
       </div>
     
     </div>
 
-    <div class="footer-version">v2.0.0 [SYSTEM ONLINE]</div>
+    <div class="footer-version">v2.0.0 [SISTEMA ONLINE]</div>
   </div>
 </ion-content>

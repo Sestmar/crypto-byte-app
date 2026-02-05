@@ -1,18 +1,18 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { Platform } from '@ionic/angular'; // Para detectar si es móvil
+import { Platform } from '@ionic/angular'; 
 
 import { 
   IonContent, IonButton, IonIcon, IonText, IonSpinner 
 } from '@ionic/angular/standalone';
 
-// Importamos Auth de AngularFire
-import { Auth, GoogleAuthProvider, signInWithCredential, signInWithPopup } from '@angular/fire/auth';
+// AÑADIDO: signInAnonymously
+import { Auth, GoogleAuthProvider, signInWithCredential, signInWithPopup, signInAnonymously } from '@angular/fire/auth';
 import { addIcons } from 'ionicons';
-import { shieldCheckmarkOutline, mailOutline, logoGoogle } from 'ionicons/icons';
+// AÑADIDO: eyeOffOutline para el modo incógnito
+import { shieldCheckmarkOutline, logoGoogle, eyeOffOutline } from 'ionicons/icons';
 
-// Importamos el plugin nativo
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 @Component({
@@ -25,39 +25,35 @@ import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 export class LoginPage implements OnInit {
   private auth = inject(Auth);
   private router = inject(Router);
-  private platform = inject(Platform); // Inyectamos Platform
+  private platform = inject(Platform);
   loading = false;
 
   constructor() {
-    addIcons({ shieldCheckmarkOutline, mailOutline, logoGoogle });
+    addIcons({ shieldCheckmarkOutline, logoGoogle, eyeOffOutline });
   }
 
   ngOnInit() {
-    // Inicializamos SIEMPRE, pasando el clientId por seguridad
-    GoogleAuth.initialize({
-      clientId: '953486025598-j4j1otlkse0obv95gcpij2c439fjig7j.apps.googleusercontent.com',
-      scopes: ['profile', 'email'],
-      grantOfflineAccess: true,
-    });
+    if (!this.platform.is('capacitor')) {
+        // Inicialización web segura
+        GoogleAuth.initialize({
+            clientId: '953486025598-j4j1otlkse0obv95gcpij2c439fjig7j.apps.googleusercontent.com',
+            scopes: ['profile', 'email'],
+            grantOfflineAccess: true,
+        }); 
+    }
   }
 
+  // --- LOGIN GOOGLE (CORREGIDO) ---
   async loginGoogle() {
     this.loading = true;
     try {
       let userCredential;
 
-      // 1. SI ES MÓVIL (Android/iOS) -> USAMOS PLUGIN NATIVO
       if (this.platform.is('capacitor')) {
-        // Esto abre la ventana nativa de Google del móvil
         const googleUser = await GoogleAuth.signIn();
-        
-        // Creamos la credencial para Firebase usando el token que nos da Google
         const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
-        
-        // Iniciamos sesión en Firebase
         userCredential = await signInWithCredential(this.auth, credential);
       } 
-      // 2. SI ES WEB (PC) -> USAMOS POPUP CLÁSICO
       else {
         const provider = new GoogleAuthProvider();
         provider.setCustomParameters({ prompt: 'select_account' });
@@ -69,7 +65,28 @@ export class LoginPage implements OnInit {
     
     } catch (error: any) {
       console.error('Login Error:', error);
-      alert('Error: ' + (error.message || JSON.stringify(error)));
+      
+      // FILTRO DE ERRORES: Si el usuario cierra la ventana, NO mostramos alerta
+      const msg = error.message || JSON.stringify(error);
+      if (msg.includes('closed-by-user') || msg.includes('cancelled') || msg.includes('12501')) {
+        console.log('Usuario canceló el login');
+      } else {
+        alert('Error de conexión: ' + msg);
+      }
+
+    } finally {
+      this.loading = false; // Importante: Siempre quitamos el spinner
+    }
+  }
+
+  // --- LOGIN INVITADO (NUEVO) ---
+  async loginGuest() {
+    this.loading = true;
+    try {
+      await signInAnonymously(this.auth);
+      this.router.navigate(['/tabs/market']);
+    } catch (error: any) {
+      alert('Error en modo invitado: ' + error.message);
     } finally {
       this.loading = false;
     }
