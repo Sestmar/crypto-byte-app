@@ -34,16 +34,22 @@ export class LoginPage implements OnInit {
     addIcons({ shieldCheckmarkOutline, logoGoogle, rocketOutline });
   }
 
-  ngOnInit() {
-    if (!this.platform.is('capacitor')) {
-        // Inicialización web segura
-        GoogleAuth.initialize({
-            clientId: '953486025598-j4j1otlkse0obv95gcpij2c439fjig7j.apps.googleusercontent.com',
-            scopes: ['profile', 'email'],
-            grantOfflineAccess: true,
-        }); 
-    }
+  // En login.page.ts
+
+async ngOnInit() {
+  // Inicializamos el plugin SIEMPRE. 
+  // Al pasarle el clientId aquí por código, ignoramos fallos de lectura de archivos .xml o .json
+  try {
+    await GoogleAuth.initialize({
+      clientId: '953486025598-j4j1otlkse0obv95gcpij2c439fjig7j.apps.googleusercontent.com',
+      scopes: ['profile', 'email'],
+      grantOfflineAccess: true,
+    });
+    console.log('Google Auth Initialized');
+  } catch (error) {
+    console.warn('Google Auth already initialized or error:', error);
   }
+}
 
   // --- LOGIN GOOGLE ---
   async loginGoogle() {
